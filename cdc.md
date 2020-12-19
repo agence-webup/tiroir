@@ -89,7 +89,7 @@ Dans certains cas (souvent pour des raisons de SEO, il n'est pas pertinent que l
         {
           "label": "item 1.3",
           "link": "...",
-          "class": "custom-class" // custom element
+          "class": "custom-class"
         }
       ]
     },
@@ -130,4 +130,4 @@ fetch('./menu.json')
 
 ## Build
 
-Utiliser de préférence rollup pour créer un build UMD + esm
+Utiliser de préférence rollup pour créer une build UMD + esm
