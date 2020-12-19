@@ -8,12 +8,14 @@ Il doit s'adapter à tous les types de menu :
 * grand menu avec une gestion du scroll
 * mega menu avec gestion des niveaux (le plugin doit pouvoir gérer un nombre infini de niveaux même s'il n'est pas pertinent de dépasser le niveau 3 sur un site réel pour des raisons ergonomiques)
 
-Il doit permettre en plus d'ajouter des icônes (ex: réseaux sociaux) et un encart libre ou l'utilisateur peut construire son propre CSS.
+Il doit permettre en plus d'ajouter des icônes (ex: réseaux sociaux) et un encart libre où l'utilisateur peut construire son propre CSS (pour ajouter des actions custom)
+
+![cdc](cdc.png)
 
 ## Fonctionnement
 
-Le menu doit pouvoir s'ouvrir au clic/touch sur un élement. Lors de l'ouverture, il ajoute un overlay semi transparent sur le contenu (le contenu doit rester légèrement visible pour que ne pas perdre le contexte).
-L'animation d'ouverture doit être fluide et simple (éventuellement configurable). La fermeture peut se faire en touchant l'overlay ou en glissant le doigt vers la gauche.
+Le menu doit pouvoir s'ouvrir au clic/touch sur un élement. Lors de l'ouverture, il ajoute un overlay semi transparent sur le contenu (le contenu doit rester légèrement visible pour ne pas perdre le contexte).
+L'animation d'ouverture doit être fluide et simple (éventuellement configurable). La fermeture peut se faire en touchant l'overlay ou en glissant le doigt vers la gauche (avec un effet d'inertie comme une appli native)
 
 ## Instanciation à partir d'un HTML
 
