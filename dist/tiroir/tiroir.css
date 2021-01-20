@@ -1,0 +1,71 @@
+
+.tiroirjs__overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, .6);
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity .15s cubic-bezier(0, 0, .30, 1);
+}
+
+.tiroirjs__overlay.active {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tiroirjs__menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30rem;
+  max-width: 80%;
+  height: 100%;
+  padding: 3rem 2rem;
+  background: #fff;
+  box-shadow: 0 .2rem 2.4rem 0 rgba(0,0,0,.50);
+  transform: translateX(103%);
+  transition: transform .33s cubic-bezier(0, 0, .30, 1);
+  will-change: transform;
+}
+
+.tiroirjs__menu--left {
+  right: initial;
+  left: 0;
+  transform: translateX(-103%);
+
+}
+
+.tiroirjs__menu.active {
+  transform: translateX(0);
+}
+
+/* Navigation
+-------------------------------------------------------------- */
+
+
+.tiroirjs__nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.tiroirjs__navItem:link,
+.tiroirjs__navItem:visited {
+  margin: 1.5rem 0;
+  color: $color-dark-text;
+  font-weight: bold;
+  font-size: 1.7rem;
+  text-align: right;
+  text-decoration: none;
+}

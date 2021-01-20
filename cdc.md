@@ -1,6 +1,6 @@
 # Plugin reponsive menu
 
-Le but est de développer un plugin facilitant la mise en place de menu responsive. 
+Le but est de développer un plugin facilitant la mise en place de menu responsive.
 
 Il doit s'adapter à tous les types de menu :
 
@@ -38,11 +38,11 @@ L'animation d'ouverture doit être fluide et simple (éventuellement configurabl
       </ul>
     </ul>
   </div>
-  
+
   <div class="rmenu__actions">
     // prévoir ici un encart libre pour ajouter des actions comme un bouton de login, un panier, etc...
   </div>
-  
+
   <div class="rmenu__icons>
     <a href="#"><svg>...</svg></a>
     <a href="#"><svg>...</svg></a>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width,initial-scale=1'>
+    <title>Tiroir.js Demo</title>
+    <link rel="stylesheet" href="/tiroir/tiroir.css"/>
+    <script src='/tiroir/tiroir.min.js'></script>
+</head>
+
+<body>
+    <h1>Tiroir.js</h1>
+    <button data-tiroir-btn>Menu</button>
+    <div class="tiroirjs" id="tiroir">
+        <div class="tiroirjs__overlay"></div>
+        <nav class="tiroirjs__menu ">
+            <div class="tiroirjs__nav">
+
+            </div>
+
+            <div class="tiroirjs__actions">
+                // prévoir ici un encart libre pour ajouter des actions comme un bouton de login, un panier, etc...
+            </div>
+
+            <div class="tiroirjs__icons>
+            <a href=" #"><svg>...</svg></a>
+                <a href="#"><svg>...</svg></a>
+                <a href="#"><svg>...</svg></a>
+                <a href="#"><svg>...</svg></a>
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        const menu = new Tiroir({
+            target: document.querySelector('#tiroir'),
+            trigger: document.querySelectorAll('[data-tiroir-btn]'),
+            onOpen: function () {
+                console.log('menu open')
+            },
+            onClose: function () {
+                console.log('menu closed')
+            }
+        })
+
+        const items = [
+            {
+                label: 'Accueil',
+                link: 'https://example.com/'
+            },
+            {
+                label: 'Blog',
+                items: [
+                    {
+                        label: 'Posts',
+                        attributes: {
+                            class: 'test'
+                        },
+                        items: [
+                            {
+                                label: 'Mon super post 1',
+                                link: 'https://example.com/blog/test',
+                            },
+                            {
+                                label: 'Mon super post 2',
+                                link: 'https://example.com/blog/test',
+                            },
+                            {
+                                label: 'Mon super post 3',
+                                link: 'https://example.com/blog/test',
+                            },
+                        ]
+                    },
+                    {
+                        label: 'Vidéos',
+                        attributes: {
+                            class: 'test'
+                        },
+                        items: [
+                            {
+                                label: 'Ma super vidéo',
+                                link: 'https://example.com/blog/test',
+                            },
+                            {
+                                label: 'Ma super vidéo',
+                                link: 'https://example.com/blog/test',
+                            },
+                            {
+                                label: 'Ma super vidéo',
+                                link: 'https://example.com/blog/test',
+                            },
+                        ]
+                    },
+                ]
+            },
+            {
+                label: 'Contact',
+                link: 'https://example.com/contact'
+            },
+        ]
+
+        menu.setItems(items)
+    </script>
+</body>
+
+</html>
