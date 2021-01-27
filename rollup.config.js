@@ -1,9 +1,12 @@
+import dartScss from 'sass'
 import svelte from 'rollup-plugin-svelte'
 import resolve from '@rollup/plugin-node-resolve'
 import livereload from 'rollup-plugin-livereload'
 import { terser } from 'rollup-plugin-terser'
-import css from 'rollup-plugin-css-only'
 import babel from '@rollup/plugin-babel'
+import scss from 'rollup-plugin-scss'
+import autoprefixer from 'autoprefixer'
+import postcss from 'postcss'
 import banner from './banner'
 
 const production = !process.env.ROLLUP_WATCH
@@ -44,7 +47,12 @@ export default {
         dev: !production
       }
     }),
-    css({ output: 'tiroir.css' }),
+    scss({
+      sass: dartScss,
+      output: 'dist/tiroir/tiroir.css',
+      outputStyle: 'compressed',
+      processor: css => postcss([autoprefixer()])
+    }),
     resolve(),
     babel({ babelHelpers: 'bundled' }),
     // In dev mode, call `npm run start` once

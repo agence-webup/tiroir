@@ -1,4 +1,4 @@
 import Menu from './menu.js'
-import './style.css'
+import './style.scss'
 
 export default Menu

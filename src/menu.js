@@ -1,16 +1,16 @@
 import MenuConstructor from './Menu.svelte'
 import * as validation from './validation'
+import parser from './parser'
 
 export default class Menu {
   static activeClass = 'active'
 
   constructor (options) {
-    const items = []
     this.target = validation.requiredElement(options.target)
     this.trigger = validation.optionalElements(options.trigger)
     this.onOpen = validation.optionalFunction(options.onOpen)
     this.onClose = validation.optionalFunction(options.onClose)
-    this.backLabel = validation.defaultString(options.backLabel, 'Back')
+    this.resetLabel = validation.defaultString(options.resetLabel, 'Home')
     this.overlay = options.target.querySelector('.tiroirjs__overlay')
     this.menuContainer = options.target.querySelector('.tiroirjs__menu')
     this.direction = this.menuContainer.classList.contains('tiroirjs__menu--left')
@@ -18,12 +18,24 @@ export default class Menu {
     this.startDistance = 0
     this.distance = 0
 
+    const ssrItems = this.target.querySelector('.tiroirjs__nav')
+    let items = []
+    if (ssrItems) {
+      items = parser(ssrItems)
+      const newMenu = document.createElement('div')
+      newMenu.classList.add('tiroirjs__nav')
+      ssrItems.parentNode.replaceChild(newMenu, ssrItems)
+    }
+
     this.menu = new MenuConstructor({
       target: options.target.querySelector('.tiroirjs__nav'),
       props: {
         items,
-        backLabel: options.backLabel
+        resetLabel: this.resetLabel
       }
+    })
+    this.menu.$on('level', event => {
+      console.log(event.detail)
     })
 
     if (this.trigger) {
@@ -33,7 +45,6 @@ export default class Menu {
         })
       })
     }
-
     if (this.overlay) {
       this.overlay.addEventListener('click', (event) => {
         event.preventDefault()
@@ -50,8 +61,6 @@ export default class Menu {
     document.addEventListener('touchend', (e) => {
       this._touchEnd(e)
     }, false)
-
-    console.log(this)
   }
 
   _normalizeElement (element) {

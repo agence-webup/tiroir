@@ -194,6 +194,10 @@ function space() {
   return text(' ');
 }
 
+function empty() {
+  return text('');
+}
+
 function listen(node, event, handler, options) {
   node.addEventListener(event, handler, options);
   return () => node.removeEventListener(event, handler, options);
@@ -231,10 +235,37 @@ function set_data(text, data) {
   if (text.wholeText !== data) text.data = data;
 }
 
+function custom_event(type, detail) {
+  const e = document.createEvent('CustomEvent');
+  e.initCustomEvent(type, false, false, detail);
+  return e;
+}
+
 let current_component;
 
 function set_current_component(component) {
   current_component = component;
+}
+
+function get_current_component() {
+  if (!current_component) throw new Error('Function called outside component initialization');
+  return current_component;
+}
+
+function createEventDispatcher() {
+  const component = get_current_component();
+  return (type, detail) => {
+    const callbacks = component.$$.callbacks[type];
+
+    if (callbacks) {
+      // TODO are there situations where events could be dispatched
+      // in a server (non-DOM) environment?
+      const event = custom_event(type, detail);
+      callbacks.slice().forEach(fn => {
+        fn.call(component, event);
+      });
+    }
+  };
 }
 
 const dirty_components = [];
@@ -500,69 +531,147 @@ class SvelteComponent {
 
 function get_each_context(ctx, list, i) {
 	const child_ctx = ctx.slice();
-	child_ctx[8] = list[i];
-	child_ctx[10] = i;
+	child_ctx[10] = list[i];
+	child_ctx[12] = i;
 	return child_ctx;
 }
 
-// (18:1) {#if current}
+// (27:1) {#if current}
 function create_if_block_1(ctx) {
-	let button;
+	let button0;
 	let t0;
 	let t1;
-	let strong;
+	let button1;
 	let t2_value = /*current*/ ctx[1].label + "";
 	let t2;
+	let t3;
+	let if_block_anchor;
 	let mounted;
 	let dispose;
+	let if_block = /*current*/ ctx[1].link && create_if_block_2(ctx);
 
 	return {
 		c() {
-			button = element("button");
-			t0 = text(/*backLabel*/ ctx[0]);
+			button0 = element("button");
+			t0 = text(/*resetLabel*/ ctx[0]);
 			t1 = space();
-			strong = element("strong");
+			button1 = element("button");
 			t2 = text(t2_value);
-			attr(button, "type", "button");
+			t3 = space();
+			if (if_block) if_block.c();
+			if_block_anchor = empty();
+			attr(button0, "type", "button");
+			attr(button1, "type", "button");
 		},
 		m(target, anchor) {
-			insert(target, button, anchor);
-			append(button, t0);
+			insert(target, button0, anchor);
+			append(button0, t0);
 			insert(target, t1, anchor);
-			insert(target, strong, anchor);
-			append(strong, t2);
+			insert(target, button1, anchor);
+			append(button1, t2);
+			insert(target, t3, anchor);
+			if (if_block) if_block.m(target, anchor);
+			insert(target, if_block_anchor, anchor);
 
 			if (!mounted) {
-				dispose = listen(button, "click", /*back*/ ctx[3]);
+				dispose = [
+					listen(button0, "click", /*reset*/ ctx[5]),
+					listen(button1, "click", /*back*/ ctx[3])
+				];
+
 				mounted = true;
 			}
 		},
 		p(ctx, dirty) {
-			if (dirty & /*backLabel*/ 1) set_data(t0, /*backLabel*/ ctx[0]);
+			if (dirty & /*resetLabel*/ 1) set_data(t0, /*resetLabel*/ ctx[0]);
 			if (dirty & /*current*/ 2 && t2_value !== (t2_value = /*current*/ ctx[1].label + "")) set_data(t2, t2_value);
+
+			if (/*current*/ ctx[1].link) {
+				if (if_block) {
+					if_block.p(ctx, dirty);
+				} else {
+					if_block = create_if_block_2(ctx);
+					if_block.c();
+					if_block.m(if_block_anchor.parentNode, if_block_anchor);
+				}
+			} else if (if_block) {
+				if_block.d(1);
+				if_block = null;
+			}
 		},
 		d(detaching) {
-			if (detaching) detach(button);
+			if (detaching) detach(button0);
 			if (detaching) detach(t1);
-			if (detaching) detach(strong);
+			if (detaching) detach(button1);
+			if (detaching) detach(t3);
+			if (if_block) if_block.d(detaching);
+			if (detaching) detach(if_block_anchor);
 			mounted = false;
-			dispose();
+			run_all(dispose);
 		}
 	};
 }
 
-// (28:4) {:else}
-function create_else_block(ctx) {
+// (30:4) {#if current.link}
+function create_if_block_2(ctx) {
 	let a;
-	let t_value = /*item*/ ctx[8].label + "";
-	let t;
+	let t0;
+	let t1_value = /*current*/ ctx[1].label + "";
+	let t1;
 	let a_href_value;
 
 	let a_levels = [
 		{
-			href: a_href_value = /*item*/ ctx[8].link
+			href: a_href_value = /*current*/ ctx[1].link
 		},
-		/*item*/ ctx[8].attributes
+		/*current*/ ctx[1].attributes
+	];
+
+	let a_data = {};
+
+	for (let i = 0; i < a_levels.length; i += 1) {
+		a_data = assign(a_data, a_levels[i]);
+	}
+
+	return {
+		c() {
+			a = element("a");
+			t0 = text("All ");
+			t1 = text(t1_value);
+			set_attributes(a, a_data);
+		},
+		m(target, anchor) {
+			insert(target, a, anchor);
+			append(a, t0);
+			append(a, t1);
+		},
+		p(ctx, dirty) {
+			if (dirty & /*current*/ 2 && t1_value !== (t1_value = /*current*/ ctx[1].label + "")) set_data(t1, t1_value);
+
+			set_attributes(a, a_data = get_spread_update(a_levels, [
+				dirty & /*current*/ 2 && a_href_value !== (a_href_value = /*current*/ ctx[1].link) && { href: a_href_value },
+				dirty & /*current*/ 2 && /*current*/ ctx[1].attributes
+			]));
+		},
+		d(detaching) {
+			if (detaching) detach(a);
+		}
+	};
+}
+
+// (40:4) {:else}
+function create_else_block(ctx) {
+	let a;
+	let t_value = /*item*/ ctx[10].label + "";
+	let t;
+	let a_href_value;
+
+	let a_levels = [
+		{ class: "tiroirjs__navItem" },
+		{
+			href: a_href_value = /*item*/ ctx[10].link
+		},
+		/*item*/ ctx[10].attributes
 	];
 
 	let a_data = {};
@@ -582,11 +691,12 @@ function create_else_block(ctx) {
 			append(a, t);
 		},
 		p(ctx, dirty) {
-			if (dirty & /*currentItems*/ 4 && t_value !== (t_value = /*item*/ ctx[8].label + "")) set_data(t, t_value);
+			if (dirty & /*currentItems*/ 4 && t_value !== (t_value = /*item*/ ctx[10].label + "")) set_data(t, t_value);
 
 			set_attributes(a, a_data = get_spread_update(a_levels, [
-				dirty & /*currentItems*/ 4 && a_href_value !== (a_href_value = /*item*/ ctx[8].link) && { href: a_href_value },
-				dirty & /*currentItems*/ 4 && /*item*/ ctx[8].attributes
+				{ class: "tiroirjs__navItem" },
+				dirty & /*currentItems*/ 4 && a_href_value !== (a_href_value = /*item*/ ctx[10].link) && { href: a_href_value },
+				dirty & /*currentItems*/ 4 && /*item*/ ctx[10].attributes
 			]));
 		},
 		d(detaching) {
@@ -595,14 +705,14 @@ function create_else_block(ctx) {
 	};
 }
 
-// (26:4) {#if item.items}
+// (38:4) {#if item.items}
 function create_if_block(ctx) {
 	let button;
-	let t_value = /*item*/ ctx[8].label + "";
+	let t_value = /*item*/ ctx[10].label + "";
 	let t;
 	let mounted;
 	let dispose;
-	let button_levels = [{ type: "button" }, /*item*/ ctx[8].attributes];
+	let button_levels = [{ type: "button" }, /*item*/ ctx[10].attributes];
 	let button_data = {};
 
 	for (let i = 0; i < button_levels.length; i += 1) {
@@ -610,7 +720,7 @@ function create_if_block(ctx) {
 	}
 
 	function click_handler() {
-		return /*click_handler*/ ctx[7](/*index*/ ctx[10]);
+		return /*click_handler*/ ctx[8](/*index*/ ctx[12]);
 	}
 
 	return {
@@ -630,11 +740,11 @@ function create_if_block(ctx) {
 		},
 		p(new_ctx, dirty) {
 			ctx = new_ctx;
-			if (dirty & /*currentItems*/ 4 && t_value !== (t_value = /*item*/ ctx[8].label + "")) set_data(t, t_value);
+			if (dirty & /*currentItems*/ 4 && t_value !== (t_value = /*item*/ ctx[10].label + "")) set_data(t, t_value);
 
 			set_attributes(button, button_data = get_spread_update(button_levels, [
 				{ type: "button" },
-				dirty & /*currentItems*/ 4 && /*item*/ ctx[8].attributes
+				dirty & /*currentItems*/ 4 && /*item*/ ctx[10].attributes
 			]));
 		},
 		d(detaching) {
@@ -645,13 +755,13 @@ function create_if_block(ctx) {
 	};
 }
 
-// (24:2) {#each currentItems as item, index }
+// (36:2) {#each currentItems as item, index }
 function create_each_block(ctx) {
 	let li;
 	let t;
 
 	function select_block_type(ctx, dirty) {
-		if (/*item*/ ctx[8].items) return create_if_block;
+		if (/*item*/ ctx[10].items) return create_if_block;
 		return create_else_block;
 	}
 
@@ -772,44 +882,63 @@ function create_fragment(ctx) {
 function instance($$self, $$props, $$invalidate) {
 	let current;
 	let currentItems;
-	let { backLabel } = $$props;
+	const dispatch = createEventDispatcher();
+	let { resetLabel } = $$props;
 	let { items = [] } = $$props;
 	let position = [];
 
 	const back = () => {
-		$$invalidate(6, position = position.slice(0, -1));
+		$$invalidate(7, position = position.slice(0, -1));
 	};
 
 	const go = index => {
-		$$invalidate(6, position = [...position, index]);
+		$$invalidate(7, position = [...position, index]);
+	};
+
+	const reset = () => {
+		$$invalidate(7, position = []);
 	};
 
 	const click_handler = index => go(index);
 
 	$$self.$$set = $$props => {
-		if ("backLabel" in $$props) $$invalidate(0, backLabel = $$props.backLabel);
-		if ("items" in $$props) $$invalidate(5, items = $$props.items);
+		if ("resetLabel" in $$props) $$invalidate(0, resetLabel = $$props.resetLabel);
+		if ("items" in $$props) $$invalidate(6, items = $$props.items);
 	};
 
 	$$self.$$.update = () => {
-		if ($$self.$$.dirty & /*position, items*/ 96) {
+		if ($$self.$$.dirty & /*position, items*/ 192) {
 			 $$invalidate(1, current = position.length === 0
 			? null
 			: position.reduce((a, x) => a.items[x], { items }));
 		}
 
-		if ($$self.$$.dirty & /*current, items*/ 34) {
+		if ($$self.$$.dirty & /*current, items*/ 66) {
 			 $$invalidate(2, currentItems = current ? current.items : items);
+		}
+
+		if ($$self.$$.dirty & /*position*/ 128) {
+			 dispatch("level", position.length);
 		}
 	};
 
-	return [backLabel, current, currentItems, back, go, items, position, click_handler];
+	return [
+		resetLabel,
+		current,
+		currentItems,
+		back,
+		go,
+		reset,
+		items,
+		position,
+		click_handler
+	];
 }
 
 class Menu extends SvelteComponent {
 	constructor(options) {
 		super();
-		init(this, options, instance, create_fragment, not_equal, { backLabel: 0, items: 5 });
+		init(this, options, instance, create_fragment, not_equal, { resetLabel: 0, items: 6 });
 	}
 }
 
@@ -896,29 +1025,118 @@ var defaultString = function defaultString(value, label) {
   return use([default_(label), typeOf('string')])(value);
 };
 
+var isElementNode = function isElementNode(node) {
+  return node.nodeType === Node.ELEMENT_NODE;
+};
+
+var isTextNode = function isTextNode(node) {
+  return node.nodeType === Node.TEXT_NODE;
+};
+
+var isElementName = function isElementName(name) {
+  return function (node) {
+    return isElementNode(node) && node.nodeName === name;
+  };
+};
+
+var isUl = isElementName('UL');
+var isLi = isElementName('LI');
+var isA = isElementName('A');
+var isButton = isElementName('BUTTON');
+
+var normalizeAttributes = function normalizeAttributes(denyList, attributes) {
+  return Object.fromEntries(Array.from(attributes).filter(function (attribute) {
+    return !denyList.includes(attribute.name);
+  }).map(function (attribute) {
+    return [attribute.name, attribute.nodeValue];
+  }));
+};
+
+var parseItem = function parseItem(node) {
+  if (isLi(node)) {
+    var children = Array.from(node.childNodes);
+    var childList = children.find(isUl);
+    var childLink = children.find(isA);
+    var childButton = children.find(isButton);
+
+    if (!(childList || childLink)) {
+      throw new Error('Invalid item : children does not have ul or a');
+    }
+
+    var items = childList ? parseList(childList) : null;
+    var link = childLink ? childLink.href : null;
+    var label = childLink || childButton ? (childLink || childButton).textContent : children.filter(isTextNode).reduce(function (a, x) {
+      return a + x.nodeValue;
+    }, '');
+    var attributes = childLink ? normalizeAttributes(['href'], childLink.attributes) : childButton ? normalizeAttributes(['type'], childButton.attributes) : {};
+    return {
+      items: items,
+      link: link,
+      label: label,
+      attributes: attributes
+    };
+  } else {
+    throw new Error('Invalid item : node is not a li ');
+  }
+};
+
+var parseList = function parseList(node) {
+  if (isUl(node)) {
+    return Array.from(node.childNodes).filter(isElementNode).map(parseItem);
+  } else {
+    throw new Error('Invalid list : node is not a ul');
+  }
+};
+
+var parseContainer = function parseContainer(node) {
+  if (isUl(node)) {
+    return parseList(node);
+  } else {
+    var children = Array.from(node.childNodes);
+
+    if (children.some(isUl)) {
+      return parseList(children.find(isUl));
+    } else {
+      throw new Error('Invalid content : node have no ul child');
+    }
+  }
+};
+
 var Menu$1 = /*#__PURE__*/function () {
   function Menu$1(options) {
     var _this = this;
 
     _classCallCheck(this, Menu$1);
 
-    var items = [];
     this.target = requiredElement(options.target);
     this.trigger = optionalElements(options.trigger);
     this.onOpen = optionalFunction(options.onOpen);
     this.onClose = optionalFunction(options.onClose);
-    this.backLabel = defaultString(options.backLabel, 'Back');
+    this.resetLabel = defaultString(options.resetLabel, 'Home');
     this.overlay = options.target.querySelector('.tiroirjs__overlay');
     this.menuContainer = options.target.querySelector('.tiroirjs__menu');
     this.direction = this.menuContainer.classList.contains('tiroirjs__menu--left');
     this.startDistance = 0;
     this.distance = 0;
+    var ssrItems = this.target.querySelector('.tiroirjs__nav');
+    var items = [];
+
+    if (ssrItems) {
+      items = parseContainer(ssrItems);
+      var newMenu = document.createElement('div');
+      newMenu.classList.add('tiroirjs__nav');
+      ssrItems.parentNode.replaceChild(newMenu, ssrItems);
+    }
+
     this.menu = new Menu({
       target: options.target.querySelector('.tiroirjs__nav'),
       props: {
         items: items,
-        backLabel: options.backLabel
+        resetLabel: this.resetLabel
       }
+    });
+    this.menu.$on('level', function (event) {
+      console.log(event.detail);
     });
 
     if (this.trigger) {
@@ -947,7 +1165,6 @@ var Menu$1 = /*#__PURE__*/function () {
     document.addEventListener('touchend', function (e) {
       _this._touchEnd(e);
     }, false);
-    console.log(this);
   }
 
   _createClass(Menu$1, [{

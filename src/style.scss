@@ -1,3 +1,10 @@
+// variables
+// --------------------------------------------------------------
+
+$color-primary: #60446a;
+
+// style
+// --------------------------------------------------------------
 
 .tiroirjs__overlay {
   position: fixed;
@@ -32,7 +39,6 @@
   width: 30rem;
   max-width: 80%;
   height: 100%;
-  padding: 3rem 2rem;
   background: #fff;
   box-shadow: 0 .2rem 2.4rem 0 rgba(0,0,0,.50);
   transform: translateX(103%);
@@ -54,18 +60,50 @@
 /* Navigation
 -------------------------------------------------------------- */
 
-
 .tiroirjs__nav {
-  display: flex;
+  display: grid;
   flex-direction: column;
 }
 
 .tiroirjs__navItem:link,
 .tiroirjs__navItem:visited {
   margin: 1.5rem 0;
-  color: $color-dark-text;
+  color: $color-primary;
   font-weight: bold;
   font-size: 1.7rem;
   text-align: right;
   text-decoration: none;
+}
+
+/* Custom actions
+-------------------------------------------------------------- */
+
+.tiroirjs__actions {
+  padding: 1rem;
+}
+
+/* Footer
+-------------------------------------------------------------- */
+
+.tiroirjs__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: auto;
+  padding: .5rem;
+  line-height: 0;
+  border-top: .1rem solid #d8d8d8;
+}
+
+.tiroirjs__footerItem,
+.tiroirjs__footerItem:link,
+.tiroirjs__footerItem:visited {
+  min-width: 2rem;
+  padding: .5rem;
+}
+
+.tiroirjs__footerItem > svg {
+  width: 3rem;
+  height: auto;
 }
