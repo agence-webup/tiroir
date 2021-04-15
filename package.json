@@ -1,8 +1,26 @@
 {
-  "name": "tiroir.js",
+  "name": "@agence-webup/tiroir",
   "version": "0.1.0",
   "description": "A simple drawer menu vanilla plugin",
-  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agence-webup/tiroir.git"
+  },
+  "author": "Agence Webup",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/agence-webup/tiroir/issues"
+  },
+  "homepage": "https://github.com/agence-webup/tiroir#readme",
+  "keywords": [
+    "drawer",
+    "vanilla",
+    "menu",
+    "mobile"
+  ],
+  "main": "dist/tiroir/tiroir.min.js",
+  "module": "dist/tiroir/tiroir.esm.min.js",
+  "style": "dist/tiroir/tiroir.css",
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
@@ -33,16 +51,5 @@
     "stylelint-config-rational-order": "^0.1.2",
     "stylelint-order": "^4.1.0",
     "svelte": "^3.31.2"
-  },
-  "dependencies": {},
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/agence-webup/tiroir.git"
-  },
-  "author": "Agence Webup",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/agence-webup/tiroir/issues"
-  },
-  "homepage": "https://github.com/agence-webup/tiroir#readme"
+  }
 }
