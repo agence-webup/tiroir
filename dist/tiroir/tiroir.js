@@ -1270,7 +1270,10 @@
       value: function open() {
         this.overlay.classList.add(this.constructor.activeClass);
         this.menuContainer.classList.add(this.constructor.activeClass);
-        this.onOpen();
+
+        if (this.onOpen) {
+          this.onOpen();
+        }
       }
     }, {
       key: "close",
@@ -1278,7 +1281,10 @@
         this.menuContainer.style.transform = null;
         this.overlay.classList.remove(this.constructor.activeClass);
         this.menuContainer.classList.remove(this.constructor.activeClass);
-        this.onClose();
+
+        if (this.onClose) {
+          this.onClose();
+        }
       }
     }, {
       key: "isOpen",

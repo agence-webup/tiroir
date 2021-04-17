@@ -1264,7 +1264,10 @@ var Menu$1 = /*#__PURE__*/function () {
     value: function open() {
       this.overlay.classList.add(this.constructor.activeClass);
       this.menuContainer.classList.add(this.constructor.activeClass);
-      this.onOpen();
+
+      if (this.onOpen) {
+        this.onOpen();
+      }
     }
   }, {
     key: "close",
@@ -1272,7 +1275,10 @@ var Menu$1 = /*#__PURE__*/function () {
       this.menuContainer.style.transform = null;
       this.overlay.classList.remove(this.constructor.activeClass);
       this.menuContainer.classList.remove(this.constructor.activeClass);
-      this.onClose();
+
+      if (this.onClose) {
+        this.onClose();
+      }
     }
   }, {
     key: "isOpen",
