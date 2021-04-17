@@ -1126,12 +1126,14 @@
       this.distance = 0;
       var ssrItems = this.target.querySelector('.tiroirjs__nav');
       var items = [];
+      var newMenu = document.createElement('div');
+      newMenu.classList.add('tiroirjs__nav');
 
       if (ssrItems) {
         items = parseContainer(ssrItems);
-        var newMenu = document.createElement('div');
-        newMenu.classList.add('tiroirjs__nav');
         ssrItems.parentNode.replaceChild(newMenu, ssrItems);
+      } else {
+        this.menuContainer.prepend(newMenu);
       }
 
       this.menu = new Menu({

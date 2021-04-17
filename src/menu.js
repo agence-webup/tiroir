@@ -20,11 +20,13 @@ export default class Menu {
 
     const ssrItems = this.target.querySelector('.tiroirjs__nav')
     let items = []
+    const newMenu = document.createElement('div')
+    newMenu.classList.add('tiroirjs__nav')
     if (ssrItems) {
       items = parser(ssrItems)
-      const newMenu = document.createElement('div')
-      newMenu.classList.add('tiroirjs__nav')
       ssrItems.parentNode.replaceChild(newMenu, ssrItems)
+    } else {
+      this.menuContainer.prepend(newMenu)
     }
 
     this.menu = new MenuConstructor({
