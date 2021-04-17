@@ -11,6 +11,7 @@ export default class Menu {
     this.onOpen = validation.optionalFunction(options.onOpen)
     this.onClose = validation.optionalFunction(options.onClose)
     this.resetLabel = validation.defaultString(options.resetLabel, 'Home')
+    this.currentLabel = validation.defaultString(options.currentLabel, 'All')
     this.overlay = options.target.querySelector('.tiroirjs__overlay')
     this.menuContainer = options.target.querySelector('.tiroirjs__menu')
     this.direction = this.menuContainer.classList.contains('tiroirjs__menu--left')
@@ -33,7 +34,8 @@ export default class Menu {
       target: options.target.querySelector('.tiroirjs__nav'),
       props: {
         items,
-        resetLabel: this.resetLabel
+        resetLabel: this.resetLabel,
+        currentLabel: this.currentLabel
       }
     })
     this.menu.$on('level', event => {

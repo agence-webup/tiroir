@@ -531,24 +531,24 @@ class SvelteComponent {
 
 function get_each_context(ctx, list, i) {
 	const child_ctx = ctx.slice();
-	child_ctx[10] = list[i];
-	child_ctx[12] = i;
+	child_ctx[11] = list[i];
+	child_ctx[13] = i;
 	return child_ctx;
 }
 
-// (27:1) {#if current}
+// (28:1) {#if current}
 function create_if_block_1(ctx) {
 	let button0;
 	let t0;
 	let t1;
 	let button1;
-	let t2_value = /*current*/ ctx[1].label + "";
+	let t2_value = /*current*/ ctx[2].label + "";
 	let t2;
 	let t3;
 	let if_block_anchor;
 	let mounted;
 	let dispose;
-	let if_block = /*current*/ ctx[1].link && create_if_block_2(ctx);
+	let if_block = /*current*/ ctx[2].link && create_if_block_2(ctx);
 
 	return {
 		c() {
@@ -560,7 +560,9 @@ function create_if_block_1(ctx) {
 			t3 = space();
 			if (if_block) if_block.c();
 			if_block_anchor = empty();
+			attr(button0, "class", "tiroirjs__reset");
 			attr(button0, "type", "button");
+			attr(button1, "class", "tiroirjs__back");
 			attr(button1, "type", "button");
 		},
 		m(target, anchor) {
@@ -575,8 +577,8 @@ function create_if_block_1(ctx) {
 
 			if (!mounted) {
 				dispose = [
-					listen(button0, "click", /*reset*/ ctx[5]),
-					listen(button1, "click", /*back*/ ctx[3])
+					listen(button0, "click", /*reset*/ ctx[6]),
+					listen(button1, "click", /*back*/ ctx[4])
 				];
 
 				mounted = true;
@@ -584,9 +586,9 @@ function create_if_block_1(ctx) {
 		},
 		p(ctx, dirty) {
 			if (dirty & /*resetLabel*/ 1) set_data(t0, /*resetLabel*/ ctx[0]);
-			if (dirty & /*current*/ 2 && t2_value !== (t2_value = /*current*/ ctx[1].label + "")) set_data(t2, t2_value);
+			if (dirty & /*current*/ 4 && t2_value !== (t2_value = /*current*/ ctx[2].label + "")) set_data(t2, t2_value);
 
-			if (/*current*/ ctx[1].link) {
+			if (/*current*/ ctx[2].link) {
 				if (if_block) {
 					if_block.p(ctx, dirty);
 				} else {
@@ -612,19 +614,21 @@ function create_if_block_1(ctx) {
 	};
 }
 
-// (30:4) {#if current.link}
+// (31:4) {#if current.link}
 function create_if_block_2(ctx) {
 	let a;
 	let t0;
-	let t1_value = /*current*/ ctx[1].label + "";
 	let t1;
+	let t2_value = /*current*/ ctx[2].label + "";
+	let t2;
 	let a_href_value;
 
 	let a_levels = [
+		{ class: "tiroirjs__current" },
 		{
-			href: a_href_value = /*current*/ ctx[1].link
+			href: a_href_value = /*current*/ ctx[2].link
 		},
-		/*current*/ ctx[1].attributes
+		/*current*/ ctx[2].attributes
 	];
 
 	let a_data = {};
@@ -636,21 +640,25 @@ function create_if_block_2(ctx) {
 	return {
 		c() {
 			a = element("a");
-			t0 = text("All ");
-			t1 = text(t1_value);
+			t0 = text(/*currentLabel*/ ctx[1]);
+			t1 = space();
+			t2 = text(t2_value);
 			set_attributes(a, a_data);
 		},
 		m(target, anchor) {
 			insert(target, a, anchor);
 			append(a, t0);
 			append(a, t1);
+			append(a, t2);
 		},
 		p(ctx, dirty) {
-			if (dirty & /*current*/ 2 && t1_value !== (t1_value = /*current*/ ctx[1].label + "")) set_data(t1, t1_value);
+			if (dirty & /*currentLabel*/ 2) set_data(t0, /*currentLabel*/ ctx[1]);
+			if (dirty & /*current*/ 4 && t2_value !== (t2_value = /*current*/ ctx[2].label + "")) set_data(t2, t2_value);
 
 			set_attributes(a, a_data = get_spread_update(a_levels, [
-				dirty & /*current*/ 2 && a_href_value !== (a_href_value = /*current*/ ctx[1].link) && { href: a_href_value },
-				dirty & /*current*/ 2 && /*current*/ ctx[1].attributes
+				{ class: "tiroirjs__current" },
+				dirty & /*current*/ 4 && a_href_value !== (a_href_value = /*current*/ ctx[2].link) && { href: a_href_value },
+				dirty & /*current*/ 4 && /*current*/ ctx[2].attributes
 			]));
 		},
 		d(detaching) {
@@ -659,19 +667,19 @@ function create_if_block_2(ctx) {
 	};
 }
 
-// (40:4) {:else}
+// (41:4) {:else}
 function create_else_block(ctx) {
 	let a;
-	let t_value = /*item*/ ctx[10].label + "";
+	let t_value = /*item*/ ctx[11].label + "";
 	let t;
 	let a_href_value;
 
 	let a_levels = [
 		{ class: "tiroirjs__navItem" },
 		{
-			href: a_href_value = /*item*/ ctx[10].link
+			href: a_href_value = /*item*/ ctx[11].link
 		},
-		/*item*/ ctx[10].attributes
+		/*item*/ ctx[11].attributes
 	];
 
 	let a_data = {};
@@ -691,12 +699,12 @@ function create_else_block(ctx) {
 			append(a, t);
 		},
 		p(ctx, dirty) {
-			if (dirty & /*currentItems*/ 4 && t_value !== (t_value = /*item*/ ctx[10].label + "")) set_data(t, t_value);
+			if (dirty & /*currentItems*/ 8 && t_value !== (t_value = /*item*/ ctx[11].label + "")) set_data(t, t_value);
 
 			set_attributes(a, a_data = get_spread_update(a_levels, [
 				{ class: "tiroirjs__navItem" },
-				dirty & /*currentItems*/ 4 && a_href_value !== (a_href_value = /*item*/ ctx[10].link) && { href: a_href_value },
-				dirty & /*currentItems*/ 4 && /*item*/ ctx[10].attributes
+				dirty & /*currentItems*/ 8 && a_href_value !== (a_href_value = /*item*/ ctx[11].link) && { href: a_href_value },
+				dirty & /*currentItems*/ 8 && /*item*/ ctx[11].attributes
 			]));
 		},
 		d(detaching) {
@@ -705,14 +713,20 @@ function create_else_block(ctx) {
 	};
 }
 
-// (38:4) {#if item.items}
+// (39:4) {#if item.items}
 function create_if_block(ctx) {
 	let button;
-	let t_value = /*item*/ ctx[10].label + "";
+	let t_value = /*item*/ ctx[11].label + "";
 	let t;
 	let mounted;
 	let dispose;
-	let button_levels = [{ type: "button" }, /*item*/ ctx[10].attributes];
+
+	let button_levels = [
+		{ class: "tiroirjs__navItem" },
+		{ type: "button" },
+		/*item*/ ctx[11].attributes
+	];
+
 	let button_data = {};
 
 	for (let i = 0; i < button_levels.length; i += 1) {
@@ -720,7 +734,7 @@ function create_if_block(ctx) {
 	}
 
 	function click_handler() {
-		return /*click_handler*/ ctx[8](/*index*/ ctx[12]);
+		return /*click_handler*/ ctx[9](/*index*/ ctx[13]);
 	}
 
 	return {
@@ -740,11 +754,12 @@ function create_if_block(ctx) {
 		},
 		p(new_ctx, dirty) {
 			ctx = new_ctx;
-			if (dirty & /*currentItems*/ 4 && t_value !== (t_value = /*item*/ ctx[10].label + "")) set_data(t, t_value);
+			if (dirty & /*currentItems*/ 8 && t_value !== (t_value = /*item*/ ctx[11].label + "")) set_data(t, t_value);
 
 			set_attributes(button, button_data = get_spread_update(button_levels, [
+				{ class: "tiroirjs__navItem" },
 				{ type: "button" },
-				dirty & /*currentItems*/ 4 && /*item*/ ctx[10].attributes
+				dirty & /*currentItems*/ 8 && /*item*/ ctx[11].attributes
 			]));
 		},
 		d(detaching) {
@@ -755,13 +770,13 @@ function create_if_block(ctx) {
 	};
 }
 
-// (36:2) {#each currentItems as item, index }
+// (37:2) {#each currentItems as item, index }
 function create_each_block(ctx) {
 	let li;
 	let t;
 
 	function select_block_type(ctx, dirty) {
-		if (/*item*/ ctx[10].items) return create_if_block;
+		if (/*item*/ ctx[11].items) return create_if_block;
 		return create_else_block;
 	}
 
@@ -803,8 +818,8 @@ function create_fragment(ctx) {
 	let div;
 	let t;
 	let ul;
-	let if_block = /*current*/ ctx[1] && create_if_block_1(ctx);
-	let each_value = /*currentItems*/ ctx[2];
+	let if_block = /*current*/ ctx[2] && create_if_block_1(ctx);
+	let each_value = /*currentItems*/ ctx[3];
 	let each_blocks = [];
 
 	for (let i = 0; i < each_value.length; i += 1) {
@@ -821,6 +836,8 @@ function create_fragment(ctx) {
 			for (let i = 0; i < each_blocks.length; i += 1) {
 				each_blocks[i].c();
 			}
+
+			attr(ul, "class", "tiroirjs__navList");
 		},
 		m(target, anchor) {
 			insert(target, div, anchor);
@@ -833,7 +850,7 @@ function create_fragment(ctx) {
 			}
 		},
 		p(ctx, [dirty]) {
-			if (/*current*/ ctx[1]) {
+			if (/*current*/ ctx[2]) {
 				if (if_block) {
 					if_block.p(ctx, dirty);
 				} else {
@@ -846,8 +863,8 @@ function create_fragment(ctx) {
 				if_block = null;
 			}
 
-			if (dirty & /*currentItems, go*/ 20) {
-				each_value = /*currentItems*/ ctx[2];
+			if (dirty & /*currentItems, go*/ 40) {
+				each_value = /*currentItems*/ ctx[3];
 				let i;
 
 				for (i = 0; i < each_value.length; i += 1) {
@@ -884,46 +901,49 @@ function instance($$self, $$props, $$invalidate) {
 	let currentItems;
 	const dispatch = createEventDispatcher();
 	let { resetLabel } = $$props;
+	let { currentLabel } = $$props;
 	let { items = [] } = $$props;
 	let position = [];
 
 	const back = () => {
-		$$invalidate(7, position = position.slice(0, -1));
+		$$invalidate(8, position = position.slice(0, -1));
 	};
 
 	const go = index => {
-		$$invalidate(7, position = [...position, index]);
+		$$invalidate(8, position = [...position, index]);
 	};
 
 	const reset = () => {
-		$$invalidate(7, position = []);
+		$$invalidate(8, position = []);
 	};
 
 	const click_handler = index => go(index);
 
 	$$self.$$set = $$props => {
 		if ("resetLabel" in $$props) $$invalidate(0, resetLabel = $$props.resetLabel);
-		if ("items" in $$props) $$invalidate(6, items = $$props.items);
+		if ("currentLabel" in $$props) $$invalidate(1, currentLabel = $$props.currentLabel);
+		if ("items" in $$props) $$invalidate(7, items = $$props.items);
 	};
 
 	$$self.$$.update = () => {
-		if ($$self.$$.dirty & /*position, items*/ 192) {
-			 $$invalidate(1, current = position.length === 0
+		if ($$self.$$.dirty & /*position, items*/ 384) {
+			 $$invalidate(2, current = position.length === 0
 			? null
 			: position.reduce((a, x) => a.items[x], { items }));
 		}
 
-		if ($$self.$$.dirty & /*current, items*/ 66) {
-			 $$invalidate(2, currentItems = current ? current.items : items);
+		if ($$self.$$.dirty & /*current, items*/ 132) {
+			 $$invalidate(3, currentItems = current ? current.items : items);
 		}
 
-		if ($$self.$$.dirty & /*position*/ 128) {
+		if ($$self.$$.dirty & /*position*/ 256) {
 			 dispatch("level", position.length);
 		}
 	};
 
 	return [
 		resetLabel,
+		currentLabel,
 		current,
 		currentItems,
 		back,
@@ -938,7 +958,7 @@ function instance($$self, $$props, $$invalidate) {
 class Menu extends SvelteComponent {
 	constructor(options) {
 		super();
-		init(this, options, instance, create_fragment, not_equal, { resetLabel: 0, items: 6 });
+		init(this, options, instance, create_fragment, not_equal, { resetLabel: 0, currentLabel: 1, items: 7 });
 	}
 }
 
@@ -1113,6 +1133,7 @@ var Menu$1 = /*#__PURE__*/function () {
     this.onOpen = optionalFunction(options.onOpen);
     this.onClose = optionalFunction(options.onClose);
     this.resetLabel = defaultString(options.resetLabel, 'Home');
+    this.currentLabel = defaultString(options.currentLabel, 'All');
     this.overlay = options.target.querySelector('.tiroirjs__overlay');
     this.menuContainer = options.target.querySelector('.tiroirjs__menu');
     this.direction = this.menuContainer.classList.contains('tiroirjs__menu--left');
@@ -1134,7 +1155,8 @@ var Menu$1 = /*#__PURE__*/function () {
       target: options.target.querySelector('.tiroirjs__nav'),
       props: {
         items: items,
-        resetLabel: this.resetLabel
+        resetLabel: this.resetLabel,
+        currentLabel: this.currentLabel
       }
     });
     this.menu.$on('level', function (event) {
