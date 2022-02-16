@@ -1,46 +1,8 @@
 /*!
  * Tiroir.js v0.1.1
- * (c) 2020-2021 Agence Webup
+ * (c) 2020-2022 Agence Webup
  * Released under the MIT License.
  */
-
-function _typeof(obj) {
-  "@babel/helpers - typeof";
-
-  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-    _typeof = function (obj) {
-      return typeof obj;
-    };
-  } else {
-    _typeof = function (obj) {
-      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-    };
-  }
-
-  return _typeof(obj);
-}
-
-function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-
-function _defineProperties(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor) descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-
-function _createClass(Constructor, protoProps, staticProps) {
-  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-  if (staticProps) _defineProperties(Constructor, staticProps);
-  return Constructor;
-}
 
 function _defineProperty(obj, key, value) {
   if (key in obj) {
@@ -55,80 +17,6 @@ function _defineProperty(obj, key, value) {
   }
 
   return obj;
-}
-
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor) n = o.constructor.name;
-  if (n === "Map" || n === "Set") return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
-}
-
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-
-  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
-
-  return arr2;
-}
-
-function _createForOfIteratorHelper(o, allowArrayLike) {
-  var it;
-
-  if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) {
-    if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
-      if (it) o = it;
-      var i = 0;
-
-      var F = function () {};
-
-      return {
-        s: F,
-        n: function () {
-          if (i >= o.length) return {
-            done: true
-          };
-          return {
-            done: false,
-            value: o[i++]
-          };
-        },
-        e: function (e) {
-          throw e;
-        },
-        f: F
-      };
-    }
-
-    throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-  }
-
-  var normalCompletion = true,
-      didErr = false,
-      err;
-  return {
-    s: function () {
-      it = o[Symbol.iterator]();
-    },
-    n: function () {
-      var step = it.next();
-      normalCompletion = step.done;
-      return step;
-    },
-    e: function (e) {
-      didErr = true;
-      err = e;
-    },
-    f: function () {
-      try {
-        if (!normalCompletion && it.return != null) it.return();
-      } finally {
-        if (didErr) throw err;
-      }
-    }
-  };
 }
 
 function noop() {}
@@ -962,145 +850,103 @@ class Menu extends SvelteComponent {
 	}
 }
 
-var identity = function identity(x) {
-  return x;
+const identity = x => x;
+
+const use = xs => xs.reduceRight((a, x) => x(a), identity);
+
+const optional = next => value => {
+  return value == null ? null : next(value);
 };
 
-var use = function use(xs) {
-  return xs.reduceRight(function (a, x) {
-    return x(a);
-  }, identity);
+const required = next => value => {
+  if (value != null) {
+    return next(value);
+  } else {
+    throw new Error(`${typeof value} is required`);
+  }
 };
 
-var optional = function optional(next) {
-  return function (value) {
-    return value == null ? null : next(value);
-  };
+const default_ = defaultValue => next => value => {
+  return next(value == null ? defaultValue : value);
 };
 
-var required = function required(next) {
-  return function (value) {
-    if (value != null) {
-      return next(value);
+const typeOf = type => next => value => {
+  // eslint-disable-next-line valid-typeof
+  if (typeof value === type) {
+    return next(value);
+  } else {
+    throw new Error(`${typeof value} is not a type ${type}`);
+  }
+};
+
+const instanceOf = constructor => next => value => {
+  if (value instanceof constructor) {
+    return next(value);
+  } else {
+    throw new Error(`${value.constructor.name} is not an instance of ${constructor.name}`);
+  }
+};
+
+const element$1 = instanceOf(HTMLElement);
+const elements = next => value => {
+  const xs = (() => {
+    if (Array.isArray(value)) {
+      return value;
+    } else if (value instanceof NodeList || value instanceof HTMLCollection) {
+      return Array.from(value);
     } else {
-      throw new Error("".concat(_typeof(value), " is required"));
+      return [value];
     }
-  };
+  })();
+
+  return next(xs.map(use([element$1])));
 };
+const requiredElement = use([required, element$1]);
+const optionalElements = use([optional, elements]);
+const optionalFunction = use([optional, typeOf('function')]);
+const optionalString = use([optional, typeOf('string')]);
+const defaultString = (value, label) => use([default_(label), typeOf('string')])(value);
 
-var default_ = function default_(defaultValue) {
-  return function (next) {
-    return function (value) {
-      return next(value == null ? defaultValue : value);
-    };
-  };
-};
+const isElementNode = node => node.nodeType === Node.ELEMENT_NODE;
 
-var typeOf = function typeOf(type) {
-  return function (next) {
-    return function (value) {
-      // eslint-disable-next-line valid-typeof
-      if (_typeof(value) === type) {
-        return next(value);
-      } else {
-        throw new Error("".concat(_typeof(value), " is not a type ").concat(type));
-      }
-    };
-  };
-};
+const isTextNode = node => node.nodeType === Node.TEXT_NODE;
 
-var instanceOf = function instanceOf(constructor) {
-  return function (next) {
-    return function (value) {
-      if (value instanceof constructor) {
-        return next(value);
-      } else {
-        throw new Error("".concat(value.constructor.name, " is not an instance of ").concat(constructor.name));
-      }
-    };
-  };
-};
+const isElementName = name => node => isElementNode(node) && node.nodeName === name;
 
-var element$1 = instanceOf(HTMLElement);
-var elements = function elements(next) {
-  return function (value) {
-    var xs = function () {
-      if (Array.isArray(value)) {
-        return value;
-      } else if (value instanceof NodeList || value instanceof HTMLCollection) {
-        return Array.from(value);
-      } else {
-        return [value];
-      }
-    }();
+const isUl = isElementName('UL');
+const isLi = isElementName('LI');
+const isA = isElementName('A');
+const isButton = isElementName('BUTTON');
 
-    return next(xs.map(use([element$1])));
-  };
-};
-var requiredElement = use([required, element$1]);
-var optionalElements = use([optional, elements]);
-var optionalFunction = use([optional, typeOf('function')]);
-var optionalString = use([optional, typeOf('string')]);
-var defaultString = function defaultString(value, label) {
-  return use([default_(label), typeOf('string')])(value);
-};
+const normalizeAttributes = (denyList, attributes) => Object.fromEntries(Array.from(attributes).filter(attribute => !denyList.includes(attribute.name)).map(attribute => [attribute.name, attribute.nodeValue]));
 
-var isElementNode = function isElementNode(node) {
-  return node.nodeType === Node.ELEMENT_NODE;
-};
-
-var isTextNode = function isTextNode(node) {
-  return node.nodeType === Node.TEXT_NODE;
-};
-
-var isElementName = function isElementName(name) {
-  return function (node) {
-    return isElementNode(node) && node.nodeName === name;
-  };
-};
-
-var isUl = isElementName('UL');
-var isLi = isElementName('LI');
-var isA = isElementName('A');
-var isButton = isElementName('BUTTON');
-
-var normalizeAttributes = function normalizeAttributes(denyList, attributes) {
-  return Object.fromEntries(Array.from(attributes).filter(function (attribute) {
-    return !denyList.includes(attribute.name);
-  }).map(function (attribute) {
-    return [attribute.name, attribute.nodeValue];
-  }));
-};
-
-var parseItem = function parseItem(node) {
+const parseItem = node => {
   if (isLi(node)) {
-    var children = Array.from(node.childNodes);
-    var childList = children.find(isUl);
-    var childLink = children.find(isA);
-    var childButton = children.find(isButton);
+    const children = Array.from(node.childNodes);
+    const childList = children.find(isUl);
+    const childLink = children.find(isA);
+    const childButton = children.find(isButton);
 
     if (!(childList || childLink)) {
       throw new Error('Invalid item : children does not have ul or a');
     }
 
-    var items = childList ? parseList(childList) : null;
-    var link = childLink ? childLink.href : null;
-    var label = childLink || childButton ? (childLink || childButton).textContent : children.filter(isTextNode).reduce(function (a, x) {
-      return a + x.nodeValue;
-    }, '');
-    var attributes = childLink ? normalizeAttributes(['href'], childLink.attributes) : childButton ? normalizeAttributes(['type'], childButton.attributes) : {};
+    const items = childList ? parseList(childList) : null;
+    const link = childLink ? childLink.href : null;
+    const label = childLink || childButton ? (childLink || childButton).textContent : children.filter(isTextNode).reduce((a, x) => a + x.nodeValue, '');
+    const attributes = childLink ? normalizeAttributes(['href'], childLink.attributes) : childButton ? normalizeAttributes(['type'], childButton.attributes) : {};
     return {
-      items: items,
-      link: link,
-      label: label,
-      attributes: attributes
+      items,
+      link,
+      label,
+      attributes
     };
   } else {
     throw new Error('Invalid item : node is not a li ');
   }
 };
 
-var parseList = function parseList(node) {
+const parseList = node => {
   if (isUl(node)) {
     return Array.from(node.childNodes).filter(isElementNode).map(parseItem);
   } else {
@@ -1108,11 +954,11 @@ var parseList = function parseList(node) {
   }
 };
 
-var parseContainer = function parseContainer(node) {
+const parseContainer = node => {
   if (isUl(node)) {
     return parseList(node);
   } else {
-    var children = Array.from(node.childNodes);
+    const children = Array.from(node.childNodes);
 
     if (children.some(isUl)) {
       return parseList(children.find(isUl));
@@ -1122,12 +968,8 @@ var parseContainer = function parseContainer(node) {
   }
 };
 
-var Menu$1 = /*#__PURE__*/function () {
-  function Menu$1(options) {
-    var _this = this;
-
-    _classCallCheck(this, Menu$1);
-
+class Menu$1 {
+  constructor(options) {
     this.target = requiredElement(options.target);
     this.trigger = optionalElements(options.trigger);
     this.onOpen = optionalFunction(options.onOpen);
@@ -1139,9 +981,9 @@ var Menu$1 = /*#__PURE__*/function () {
     this.direction = this.menuContainer.classList.contains('tiroirjs__menu--left');
     this.startDistance = 0;
     this.distance = 0;
-    var ssrItems = this.target.querySelector('.tiroirjs__nav');
-    var items = [];
-    var newMenu = document.createElement('div');
+    const ssrItems = this.target.querySelector('.tiroirjs__nav');
+    let items = [];
+    const newMenu = document.createElement('div');
     newMenu.classList.add('tiroirjs__nav');
 
     if (ssrItems) {
@@ -1154,179 +996,152 @@ var Menu$1 = /*#__PURE__*/function () {
     this.menu = new Menu({
       target: options.target.querySelector('.tiroirjs__nav'),
       props: {
-        items: items,
+        items,
         resetLabel: this.resetLabel,
         currentLabel: this.currentLabel
       }
     });
-    this.menu.$on('level', function (event) {
+    this.menu.$on('level', event => {
       console.log(event.detail);
     });
 
     if (this.trigger) {
-      this.trigger.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          _this.toggle();
+      this.trigger.forEach(btn => {
+        btn.addEventListener('click', () => {
+          this.toggle();
         });
       });
     }
 
     if (this.overlay) {
-      this.overlay.addEventListener('click', function (event) {
+      this.overlay.addEventListener('click', event => {
         event.preventDefault();
         event.stopPropagation();
-
-        _this.close();
+        this.close();
       }, false);
     }
 
-    document.addEventListener('touchstart', function (e) {
-      _this._touchStart(e);
+    document.addEventListener('touchstart', e => {
+      this._touchStart(e);
     }, false);
-    document.addEventListener('touchmove', function (e) {
-      _this._touchMove(e);
+    document.addEventListener('touchmove', e => {
+      this._touchMove(e);
     }, false);
-    document.addEventListener('touchend', function (e) {
-      _this._touchEnd(e);
+    document.addEventListener('touchend', e => {
+      this._touchEnd(e);
     }, false);
   }
 
-  _createClass(Menu$1, [{
-    key: "_normalizeElement",
-    value: function _normalizeElement(element) {
-      if (element instanceof HTMLElement) {
-        return element;
-      } else {
-        throw new Error(element.constructor.name + ' is not an html element');
-      }
+  _normalizeElement(element) {
+    if (element instanceof HTMLElement) {
+      return element;
+    } else {
+      throw new Error(element.constructor.name + ' is not an html element');
     }
-  }, {
-    key: "_normalizeSelector",
-    value: function _normalizeSelector(x) {
-      var elements = function () {
-        switch (true) {
-          case Array.isArray(x):
-            return x;
+  }
 
-          case x instanceof NodeList || x instanceof HTMLCollection:
-            return Array.from(x);
+  _normalizeSelector(x) {
+    const elements = (() => {
+      switch (true) {
+        case Array.isArray(x):
+          return x;
 
-          default:
-            return [x];
-        }
-      }();
+        case x instanceof NodeList || x instanceof HTMLCollection:
+          return Array.from(x);
 
-      var _iterator = _createForOfIteratorHelper(elements),
-          _step;
-
-      try {
-        for (_iterator.s(); !(_step = _iterator.n()).done;) {
-          var element = _step.value;
-
-          this._normalizeElement(element);
-        }
-      } catch (err) {
-        _iterator.e(err);
-      } finally {
-        _iterator.f();
+        default:
+          return [x];
       }
+    })();
 
-      return elements;
+    for (const element of elements) {
+      this._normalizeElement(element);
     }
-  }, {
-    key: "_normalizeFunction",
-    value: function _normalizeFunction(f) {
-      if (typeof f === 'function') {
-        return f;
-      } else {
-        throw new Error(f.constructor.name + ' is not an valid function');
-      }
-    }
-  }, {
-    key: "_transitionEnd",
-    value: function _transitionEnd() {
-      if (!this.isOpen()) {
-        this.close();
-      }
-    }
-  }, {
-    key: "_touchStart",
-    value: function _touchStart(event) {
-      if (!this.isOpen()) {
-        return;
-      }
 
-      this.startDistance = event.touches[0].pageX;
-    }
-  }, {
-    key: "_touchMove",
-    value: function _touchMove(event) {
-      if (!this.isOpen()) {
-        return;
-      }
+    return elements;
+  }
 
-      this.distance = (this.direction ? Math.min : Math.max)(0, event.touches[0].pageX - this.startDistance);
-      this.menuContainer.style.transform = 'translateX(' + this.distance + 'px)';
+  _normalizeFunction(f) {
+    if (typeof f === 'function') {
+      return f;
+    } else {
+      throw new Error(f.constructor.name + ' is not an valid function');
     }
-  }, {
-    key: "_touchEnd",
-    value: function _touchEnd() {
-      if (!this.isOpen()) {
-        return;
-      }
+  }
 
-      if (Math.abs(this.distance) > 70) {
-        this.close();
-      } else {
-        this.menuContainer.style.transform = null;
-      }
+  _transitionEnd() {
+    if (!this.isOpen()) {
+      this.close();
     }
-  }, {
-    key: "open",
-    value: function open() {
-      this.overlay.classList.add(this.constructor.activeClass);
-      this.menuContainer.classList.add(this.constructor.activeClass);
+  }
 
-      if (this.onOpen) {
-        this.onOpen();
-      }
+  _touchStart(event) {
+    if (!this.isOpen()) {
+      return;
     }
-  }, {
-    key: "close",
-    value: function close() {
+
+    this.startDistance = event.touches[0].pageX;
+  }
+
+  _touchMove(event) {
+    if (!this.isOpen()) {
+      return;
+    }
+
+    this.distance = (this.direction ? Math.min : Math.max)(0, event.touches[0].pageX - this.startDistance);
+    this.menuContainer.style.transform = 'translateX(' + this.distance + 'px)';
+  }
+
+  _touchEnd() {
+    if (!this.isOpen()) {
+      return;
+    }
+
+    if (Math.abs(this.distance) > 70) {
+      this.close();
+    } else {
       this.menuContainer.style.transform = null;
-      this.overlay.classList.remove(this.constructor.activeClass);
-      this.menuContainer.classList.remove(this.constructor.activeClass);
+    }
+  }
 
-      if (this.onClose) {
-        this.onClose();
-      }
-    }
-  }, {
-    key: "isOpen",
-    value: function isOpen() {
-      return this.menuContainer.classList.contains(this.constructor.activeClass);
-    }
-  }, {
-    key: "toggle",
-    value: function toggle() {
-      if (!this.isOpen()) {
-        this.open();
-      } else {
-        this.close();
-      }
-    }
-  }, {
-    key: "setItems",
-    value: function setItems(items) {
-      this.menu.$set({
-        items: items
-      });
-    }
-  }]);
+  open() {
+    this.overlay.classList.add(this.constructor.activeClass);
+    this.menuContainer.classList.add(this.constructor.activeClass);
 
-  return Menu$1;
-}();
+    if (this.onOpen) {
+      this.onOpen();
+    }
+  }
+
+  close() {
+    this.menuContainer.style.transform = null;
+    this.overlay.classList.remove(this.constructor.activeClass);
+    this.menuContainer.classList.remove(this.constructor.activeClass);
+
+    if (this.onClose) {
+      this.onClose();
+    }
+  }
+
+  isOpen() {
+    return this.menuContainer.classList.contains(this.constructor.activeClass);
+  }
+
+  toggle() {
+    if (!this.isOpen()) {
+      this.open();
+    } else {
+      this.close();
+    }
+  }
+
+  setItems(items) {
+    this.menu.$set({
+      items
+    });
+  }
+
+}
 
 _defineProperty(Menu$1, "activeClass", 'active');
 
