@@ -1,5 +1,5 @@
 /*!
- * Tiroir.js v0.1.1
+ * Tiroir.js v0.1.2
  * (c) 2020-2022 Agence Webup
  * Released under the MIT License.
  */
