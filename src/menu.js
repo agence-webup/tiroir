@@ -1,6 +1,7 @@
 import MenuConstructor from './Menu.svelte'
 import * as validation from './validation'
 import parser from './parser'
+import { tabbable } from 'tabbable'
 
 export default class Menu {
   static activeClass = 'active'
@@ -10,7 +11,7 @@ export default class Menu {
     this.trigger = validation.optionalElements(options.trigger)
     this.onOpen = validation.optionalFunction(options.onOpen)
     this.onClose = validation.optionalFunction(options.onClose)
-    this.resetLabel = validation.defaultString(options.resetLabel, 'Home')
+    this.resetLabel = validation.defaultString(options.resetLabel, 'Back home')
     this.currentLabel = validation.defaultString(options.currentLabel, 'All')
     this.overlay = options.target.querySelector('.tiroirjs__overlay')
     this.menuContainer = options.target.querySelector('.tiroirjs__menu')
@@ -39,7 +40,8 @@ export default class Menu {
       }
     })
     this.menu.$on('level', event => {
-      console.log(event.detail)
+      console.log('change level')
+      this._resetTab()
     })
 
     if (this.trigger) {
@@ -65,6 +67,11 @@ export default class Menu {
     document.addEventListener('touchend', (e) => {
       this._touchEnd(e)
     }, false)
+    document.addEventListener('keydown', e => {
+      if (e.key === "Escape" && this.isOpen()) {
+        this.close()
+      }
+    })
   }
 
   _normalizeElement (element) {
@@ -129,15 +136,22 @@ export default class Menu {
     }
   }
 
+  _resetTab () {
+    console.log(tabbable(this.menuContainer))
+    tabbable(this.menuContainer)?.[0].focus();
+  }
+
   open () {
     this.overlay.classList.add(this.constructor.activeClass)
     this.menuContainer.classList.add(this.constructor.activeClass)
     if (this.onOpen) {
       this.onOpen()
     }
+    this._resetTab()
   }
 
   close () {
+    document.activeElement.blur()
     this.menuContainer.style.transform = null
     this.overlay.classList.remove(this.constructor.activeClass)
     this.menuContainer.classList.remove(this.constructor.activeClass)

@@ -176,6 +176,11 @@
     }
   }
 
+  function tick() {
+    schedule_update();
+    return resolved_promise;
+  }
+
   function add_render_callback(fn) {
     render_callbacks.push(fn);
   }
@@ -455,7 +460,7 @@
   	return child_ctx;
   }
 
-  // (28:1) {#if current}
+  // (30:1) {#if current}
   function create_if_block_1(ctx) {
   	let button0;
   	let t0;
@@ -533,7 +538,7 @@
   	};
   }
 
-  // (31:4) {#if current.link}
+  // (33:4) {#if current.link}
   function create_if_block_2(ctx) {
   	let a;
   	let t0;
@@ -542,27 +547,14 @@
   	let t2;
   	let a_href_value;
 
-  	let a_levels = [
-  		{ class: "tiroirjs__current" },
-  		{
-  			href: a_href_value = /*current*/ ctx[2].link
-  		},
-  		/*current*/ ctx[2].attributes
-  	];
-
-  	let a_data = {};
-
-  	for (let i = 0; i < a_levels.length; i += 1) {
-  		a_data = assign(a_data, a_levels[i]);
-  	}
-
   	return {
   		c() {
   			a = element$1("a");
   			t0 = text(/*currentLabel*/ ctx[1]);
   			t1 = space();
   			t2 = text(t2_value);
-  			set_attributes(a, a_data);
+  			attr(a, "class", "tiroirjs__current");
+  			attr(a, "href", a_href_value = /*current*/ ctx[2].link);
   		},
   		m(target, anchor) {
   			insert(target, a, anchor);
@@ -574,11 +566,9 @@
   			if (dirty & /*currentLabel*/ 2) set_data(t0, /*currentLabel*/ ctx[1]);
   			if (dirty & /*current*/ 4 && t2_value !== (t2_value = /*current*/ ctx[2].label + "")) set_data(t2, t2_value);
 
-  			set_attributes(a, a_data = get_spread_update(a_levels, [
-  				{ class: "tiroirjs__current" },
-  				dirty & /*current*/ 4 && a_href_value !== (a_href_value = /*current*/ ctx[2].link) && { href: a_href_value },
-  				dirty & /*current*/ 4 && /*current*/ ctx[2].attributes
-  			]));
+  			if (dirty & /*current*/ 4 && a_href_value !== (a_href_value = /*current*/ ctx[2].link)) {
+  				attr(a, "href", a_href_value);
+  			}
   		},
   		d(detaching) {
   			if (detaching) detach(a);
@@ -586,19 +576,22 @@
   	};
   }
 
-  // (41:4) {:else}
+  // (43:4) {:else}
   function create_else_block(ctx) {
   	let a;
   	let t_value = /*item*/ ctx[11].label + "";
   	let t;
+  	let a_class_value;
   	let a_href_value;
 
   	let a_levels = [
-  		{ class: "tiroirjs__navItem" },
+  		/*item*/ ctx[11]?.attributes,
+  		{
+  			class: a_class_value = "tiroirjs__navItem " + (/*current*/ ctx[2] ? 'tiroirjs__navItem--child' : '') + " " + (/*item*/ ctx[11].attributes?.class ?? '')
+  		},
   		{
   			href: a_href_value = /*item*/ ctx[11].link
-  		},
-  		/*item*/ ctx[11].attributes
+  		}
   	];
 
   	let a_data = {};
@@ -621,9 +614,9 @@
   			if (dirty & /*currentItems*/ 8 && t_value !== (t_value = /*item*/ ctx[11].label + "")) set_data(t, t_value);
 
   			set_attributes(a, a_data = get_spread_update(a_levels, [
-  				{ class: "tiroirjs__navItem" },
-  				dirty & /*currentItems*/ 8 && a_href_value !== (a_href_value = /*item*/ ctx[11].link) && { href: a_href_value },
-  				dirty & /*currentItems*/ 8 && /*item*/ ctx[11].attributes
+  				dirty & /*currentItems*/ 8 && /*item*/ ctx[11]?.attributes,
+  				dirty & /*current, currentItems*/ 12 && a_class_value !== (a_class_value = "tiroirjs__navItem " + (/*current*/ ctx[2] ? 'tiroirjs__navItem--child' : '') + " " + (/*item*/ ctx[11].attributes?.class ?? '')) && { class: a_class_value },
+  				dirty & /*currentItems*/ 8 && a_href_value !== (a_href_value = /*item*/ ctx[11].link) && { href: a_href_value }
   			]));
   		},
   		d(detaching) {
@@ -632,18 +625,21 @@
   	};
   }
 
-  // (39:4) {#if item.items}
+  // (41:4) {#if item.items}
   function create_if_block(ctx) {
   	let button;
   	let t_value = /*item*/ ctx[11].label + "";
   	let t;
+  	let button_class_value;
   	let mounted;
   	let dispose;
 
   	let button_levels = [
-  		{ class: "tiroirjs__navItem" },
-  		{ type: "button" },
-  		/*item*/ ctx[11].attributes
+  		/*item*/ ctx[11]?.attributes,
+  		{
+  			class: button_class_value = "tiroirjs__navItem " + (/*current*/ ctx[2] ? 'tiroirjs__navItem--child' : '') + " " + (/*item*/ ctx[11].attributes?.class ?? '')
+  		},
+  		{ type: "button" }
   	];
 
   	let button_data = {};
@@ -677,9 +673,9 @@
   			if (dirty & /*currentItems*/ 8 && t_value !== (t_value = /*item*/ ctx[11].label + "")) set_data(t, t_value);
 
   			set_attributes(button, button_data = get_spread_update(button_levels, [
-  				{ class: "tiroirjs__navItem" },
-  				{ type: "button" },
-  				dirty & /*currentItems*/ 8 && /*item*/ ctx[11].attributes
+  				dirty & /*currentItems*/ 8 && /*item*/ ctx[11]?.attributes,
+  				dirty & /*current, currentItems*/ 12 && button_class_value !== (button_class_value = "tiroirjs__navItem " + (/*current*/ ctx[2] ? 'tiroirjs__navItem--child' : '') + " " + (/*item*/ ctx[11].attributes?.class ?? '')) && { class: button_class_value },
+  				{ type: "button" }
   			]));
   		},
   		d(detaching) {
@@ -690,7 +686,7 @@
   	};
   }
 
-  // (37:2) {#each currentItems as item, index }
+  // (39:2) {#each currentItems as item, index }
   function create_each_block(ctx) {
   	let li;
   	let t;
@@ -783,7 +779,7 @@
   				if_block = null;
   			}
 
-  			if (dirty & /*currentItems, go*/ 40) {
+  			if (dirty & /*currentItems, current, go*/ 44) {
   				each_value = /*currentItems*/ ctx[3];
   				let i;
 
@@ -857,7 +853,12 @@
   		}
 
   		if ($$self.$$.dirty & /*position*/ 256) {
-  			dispatch('level', position.length);
+  			if (position.length) {
+  				(async () => {
+  					await tick();
+  					dispatch('level', position.length);
+  				})(); // dispatch only after DOM is updated
+  			}
   		}
   	};
 
@@ -1000,13 +1001,238 @@
     }
   };
 
+  /*!
+  * tabbable 5.2.1
+  * @license MIT, https://github.com/focus-trap/tabbable/blob/master/LICENSE
+  */
+  var candidateSelectors = ['input', 'select', 'textarea', 'a[href]', 'button', '[tabindex]', 'audio[controls]', 'video[controls]', '[contenteditable]:not([contenteditable="false"])', 'details>summary:first-of-type', 'details'];
+  var candidateSelector = /* #__PURE__ */candidateSelectors.join(',');
+  var matches = typeof Element === 'undefined' ? function () {} : Element.prototype.matches || Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
+
+  var getCandidates = function getCandidates(el, includeContainer, filter) {
+    var candidates = Array.prototype.slice.apply(el.querySelectorAll(candidateSelector));
+
+    if (includeContainer && matches.call(el, candidateSelector)) {
+      candidates.unshift(el);
+    }
+
+    candidates = candidates.filter(filter);
+    return candidates;
+  };
+
+  var isContentEditable = function isContentEditable(node) {
+    return node.contentEditable === 'true';
+  };
+
+  var getTabindex = function getTabindex(node) {
+    var tabindexAttr = parseInt(node.getAttribute('tabindex'), 10);
+
+    if (!isNaN(tabindexAttr)) {
+      return tabindexAttr;
+    } // Browsers do not return `tabIndex` correctly for contentEditable nodes;
+    // so if they don't have a tabindex attribute specifically set, assume it's 0.
+
+
+    if (isContentEditable(node)) {
+      return 0;
+    } // in Chrome, <details/>, <audio controls/> and <video controls/> elements get a default
+    //  `tabIndex` of -1 when the 'tabindex' attribute isn't specified in the DOM,
+    //  yet they are still part of the regular tab order; in FF, they get a default
+    //  `tabIndex` of 0; since Chrome still puts those elements in the regular tab
+    //  order, consider their tab index to be 0.
+
+
+    if ((node.nodeName === 'AUDIO' || node.nodeName === 'VIDEO' || node.nodeName === 'DETAILS') && node.getAttribute('tabindex') === null) {
+      return 0;
+    }
+
+    return node.tabIndex;
+  };
+
+  var sortOrderedTabbables = function sortOrderedTabbables(a, b) {
+    return a.tabIndex === b.tabIndex ? a.documentOrder - b.documentOrder : a.tabIndex - b.tabIndex;
+  };
+
+  var isInput = function isInput(node) {
+    return node.tagName === 'INPUT';
+  };
+
+  var isHiddenInput = function isHiddenInput(node) {
+    return isInput(node) && node.type === 'hidden';
+  };
+
+  var isDetailsWithSummary = function isDetailsWithSummary(node) {
+    var r = node.tagName === 'DETAILS' && Array.prototype.slice.apply(node.children).some(function (child) {
+      return child.tagName === 'SUMMARY';
+    });
+    return r;
+  };
+
+  var getCheckedRadio = function getCheckedRadio(nodes, form) {
+    for (var i = 0; i < nodes.length; i++) {
+      if (nodes[i].checked && nodes[i].form === form) {
+        return nodes[i];
+      }
+    }
+  };
+
+  var isTabbableRadio = function isTabbableRadio(node) {
+    if (!node.name) {
+      return true;
+    }
+
+    var radioScope = node.form || node.ownerDocument;
+
+    var queryRadios = function queryRadios(name) {
+      return radioScope.querySelectorAll('input[type="radio"][name="' + name + '"]');
+    };
+
+    var radioSet;
+
+    if (typeof window !== 'undefined' && typeof window.CSS !== 'undefined' && typeof window.CSS.escape === 'function') {
+      radioSet = queryRadios(window.CSS.escape(node.name));
+    } else {
+      try {
+        radioSet = queryRadios(node.name);
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('Looks like you have a radio button with a name attribute containing invalid CSS selector characters and need the CSS.escape polyfill: %s', err.message);
+        return false;
+      }
+    }
+
+    var checked = getCheckedRadio(radioSet, node.form);
+    return !checked || checked === node;
+  };
+
+  var isRadio = function isRadio(node) {
+    return isInput(node) && node.type === 'radio';
+  };
+
+  var isNonTabbableRadio = function isNonTabbableRadio(node) {
+    return isRadio(node) && !isTabbableRadio(node);
+  };
+
+  var isHidden = function isHidden(node, displayCheck) {
+    if (getComputedStyle(node).visibility === 'hidden') {
+      return true;
+    }
+
+    var isDirectSummary = matches.call(node, 'details>summary:first-of-type');
+    var nodeUnderDetails = isDirectSummary ? node.parentElement : node;
+
+    if (matches.call(nodeUnderDetails, 'details:not([open]) *')) {
+      return true;
+    }
+
+    if (!displayCheck || displayCheck === 'full') {
+      while (node) {
+        if (getComputedStyle(node).display === 'none') {
+          return true;
+        }
+
+        node = node.parentElement;
+      }
+    } else if (displayCheck === 'non-zero-area') {
+      var _node$getBoundingClie = node.getBoundingClientRect(),
+          width = _node$getBoundingClie.width,
+          height = _node$getBoundingClie.height;
+
+      return width === 0 && height === 0;
+    }
+
+    return false;
+  }; // form fields (nested) inside a disabled fieldset are not focusable/tabbable
+  //  unless they are in the _first_ <legend> element of the top-most disabled
+  //  fieldset
+
+
+  var isDisabledFromFieldset = function isDisabledFromFieldset(node) {
+    if (isInput(node) || node.tagName === 'SELECT' || node.tagName === 'TEXTAREA' || node.tagName === 'BUTTON') {
+      var parentNode = node.parentElement;
+
+      while (parentNode) {
+        if (parentNode.tagName === 'FIELDSET' && parentNode.disabled) {
+          // look for the first <legend> as an immediate child of the disabled
+          //  <fieldset>: if the node is in that legend, it'll be enabled even
+          //  though the fieldset is disabled; otherwise, the node is in a
+          //  secondary/subsequent legend, or somewhere else within the fieldset
+          //  (however deep nested) and it'll be disabled
+          for (var i = 0; i < parentNode.children.length; i++) {
+            var child = parentNode.children.item(i);
+
+            if (child.tagName === 'LEGEND') {
+              if (child.contains(node)) {
+                return false;
+              } // the node isn't in the first legend (in doc order), so no matter
+              //  where it is now, it'll be disabled
+
+
+              return true;
+            }
+          } // the node isn't in a legend, so no matter where it is now, it'll be disabled
+
+
+          return true;
+        }
+
+        parentNode = parentNode.parentElement;
+      }
+    } // else, node's tabbable/focusable state should not be affected by a fieldset's
+    //  enabled/disabled state
+
+
+    return false;
+  };
+
+  var isNodeMatchingSelectorFocusable = function isNodeMatchingSelectorFocusable(options, node) {
+    if (node.disabled || isHiddenInput(node) || isHidden(node, options.displayCheck) || // For a details element with a summary, the summary element gets the focus
+    isDetailsWithSummary(node) || isDisabledFromFieldset(node)) {
+      return false;
+    }
+
+    return true;
+  };
+
+  var isNodeMatchingSelectorTabbable = function isNodeMatchingSelectorTabbable(options, node) {
+    if (!isNodeMatchingSelectorFocusable(options, node) || isNonTabbableRadio(node) || getTabindex(node) < 0) {
+      return false;
+    }
+
+    return true;
+  };
+
+  var tabbable = function tabbable(el, options) {
+    options = options || {};
+    var regularTabbables = [];
+    var orderedTabbables = [];
+    var candidates = getCandidates(el, options.includeContainer, isNodeMatchingSelectorTabbable.bind(null, options));
+    candidates.forEach(function (candidate, i) {
+      var candidateTabindex = getTabindex(candidate);
+
+      if (candidateTabindex === 0) {
+        regularTabbables.push(candidate);
+      } else {
+        orderedTabbables.push({
+          documentOrder: i,
+          tabIndex: candidateTabindex,
+          node: candidate
+        });
+      }
+    });
+    var tabbableNodes = orderedTabbables.sort(sortOrderedTabbables).map(function (a) {
+      return a.node;
+    }).concat(regularTabbables);
+    return tabbableNodes;
+  };
+
   class Menu {
     constructor(options) {
       this.target = requiredElement(options.target);
       this.trigger = optionalElements(options.trigger);
       this.onOpen = optionalFunction(options.onOpen);
       this.onClose = optionalFunction(options.onClose);
-      this.resetLabel = defaultString(options.resetLabel, 'Home');
+      this.resetLabel = defaultString(options.resetLabel, 'Back home');
       this.currentLabel = defaultString(options.currentLabel, 'All');
       this.overlay = options.target.querySelector('.tiroirjs__overlay');
       this.menuContainer = options.target.querySelector('.tiroirjs__menu');
@@ -1034,7 +1260,9 @@
         }
       });
       this.menu.$on('level', event => {
-        console.log(event.detail);
+        console.log('change level');
+
+        this._resetTab();
       });
 
       if (this.trigger) {
@@ -1062,6 +1290,11 @@
       document.addEventListener('touchend', e => {
         this._touchEnd(e);
       }, false);
+      document.addEventListener('keydown', e => {
+        if (e.key === "Escape" && this.isOpen()) {
+          this.close();
+        }
+      });
     }
 
     _normalizeElement(element) {
@@ -1136,6 +1369,13 @@
       }
     }
 
+    _resetTab() {
+      var _tabbable;
+
+      console.log(tabbable(this.menuContainer));
+      (_tabbable = tabbable(this.menuContainer)) === null || _tabbable === void 0 ? void 0 : _tabbable[0].focus();
+    }
+
     open() {
       this.overlay.classList.add(this.constructor.activeClass);
       this.menuContainer.classList.add(this.constructor.activeClass);
@@ -1143,9 +1383,12 @@
       if (this.onOpen) {
         this.onOpen();
       }
+
+      this._resetTab();
     }
 
     close() {
+      document.activeElement.blur();
       this.menuContainer.style.transform = null;
       this.overlay.classList.remove(this.constructor.activeClass);
       this.menuContainer.classList.remove(this.constructor.activeClass);

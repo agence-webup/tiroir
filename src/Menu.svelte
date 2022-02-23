@@ -1,5 +1,5 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, tick } from 'svelte';
   const dispatch = createEventDispatcher()
 
 	export let resetLabel
@@ -8,7 +8,9 @@
 	let position = []
 	$: current = position.length === 0 ? null : position.reduce((a, x) => a.items[x], {items})
   $: currentItems = current ? current.items : items
-  $: dispatch('level', position.length)
+  $: if (position.length) {
+    (async () => {await tick();dispatch('level', position.length)})() // dispatch only after DOM is updated
+  }
 
 	const back = () => {
 		position = position.slice(0, -1)
@@ -29,7 +31,7 @@
 		<button class="tiroirjs__reset" type="button" on:click={reset}>{resetLabel}</button>
     <button class="tiroirjs__back" type="button" on:click={back}>{current.label}</button>
     {#if current.link}
-      <a class="tiroirjs__current" href={current.link} {...current.attributes}>{currentLabel} {current.label}</a>
+      <a class="tiroirjs__current" href={current.link} >{currentLabel} {current.label}</a>
     {/if}
 	{/if}
 
@@ -37,9 +39,9 @@
 		{#each currentItems as item, index }
 			<li>
 				{#if item.items}
-					<button class="tiroirjs__navItem" type="button" on:click={() => go(index)} {...item.attributes}>{item.label}</button>
+					<button {...item?.attributes} class="tiroirjs__navItem {current?'tiroirjs__navItem--child':''} {item.attributes?.class??''}" type="button" on:click={() => go(index)} >{item.label}</button>
 				{:else}
-					<a class="tiroirjs__navItem" href={item.link} {...item.attributes}>{item.label}</a>
+					<a {...item?.attributes} class="tiroirjs__navItem {current?'tiroirjs__navItem--child':''} {item.attributes?.class??''}" href={item.link}>{item.label}</a>
 				{/if}
 			</li>
 		{/each}

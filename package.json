@@ -51,5 +51,8 @@
     "stylelint-config-rational-order": "^0.1.2",
     "stylelint-order": "^5.0.0",
     "svelte": "^3.46.4"
+  },
+  "dependencies": {
+    "tabbable": "^5.2.1"
   }
 }
