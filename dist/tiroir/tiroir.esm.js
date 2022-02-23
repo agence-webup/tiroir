@@ -70,7 +70,7 @@ function destroy_each(iterations, detaching) {
   }
 }
 
-function element(name) {
+function element$1(name) {
   return document.createElement(name);
 }
 
@@ -123,9 +123,9 @@ function set_data(text, data) {
   if (text.wholeText !== data) text.data = data;
 }
 
-function custom_event(type, detail) {
+function custom_event(type, detail, bubbles = false) {
   const e = document.createEvent('CustomEvent');
-  e.initCustomEvent(type, false, false, detail);
+  e.initCustomEvent(type, bubbles, false, detail);
   return e;
 }
 
@@ -173,25 +173,44 @@ function schedule_update() {
 function add_render_callback(fn) {
   render_callbacks.push(fn);
 }
+// 1. All beforeUpdate callbacks, in order: parents before children
+// 2. All bind:this callbacks, in reverse order: children before parents.
+// 3. All afterUpdate callbacks, in order: parents before children. EXCEPT
+//    for afterUpdates called during the initial onMount, which are called in
+//    reverse order: children before parents.
+// Since callbacks might update component values, which could trigger another
+// call to flush(), the following steps guard against this:
+// 1. During beforeUpdate, any updated components will be added to the
+//    dirty_components array and will cause a reentrant call to flush(). Because
+//    the flush index is kept outside the function, the reentrant call will pick
+//    up where the earlier call left off and go through all dirty components. The
+//    current_component value is saved and restored so that the reentrant call will
+//    not interfere with the "parent" flush() call.
+// 2. bind:this callbacks cannot trigger new flush() calls.
+// 3. During afterUpdate, any updated components will NOT have their afterUpdate
+//    callback called a second time; the seen_callbacks set, outside the flush()
+//    function, guarantees this behavior.
 
-let flushing = false;
+
 const seen_callbacks = new Set();
+let flushidx = 0; // Do *not* move this inside the flush() function
 
 function flush() {
-  if (flushing) return;
-  flushing = true;
+  const saved_component = current_component;
 
   do {
     // first, call beforeUpdate functions
     // and update components
-    for (let i = 0; i < dirty_components.length; i += 1) {
-      const component = dirty_components[i];
+    while (flushidx < dirty_components.length) {
+      const component = dirty_components[flushidx];
+      flushidx++;
       set_current_component(component);
       update(component.$$);
     }
 
     set_current_component(null);
     dirty_components.length = 0;
+    flushidx = 0;
 
     while (binding_callbacks.length) binding_callbacks.pop()(); // then, once components are updated, call
     // afterUpdate functions. This may cause
@@ -216,8 +235,8 @@ function flush() {
   }
 
   update_scheduled = false;
-  flushing = false;
   seen_callbacks.clear();
+  set_current_component(saved_component);
 }
 
 function update($$) {
@@ -279,28 +298,32 @@ function get_spread_update(levels, updates) {
   return update;
 }
 
-function mount_component(component, target, anchor) {
+function mount_component(component, target, anchor, customElement) {
   const {
     fragment,
     on_mount,
     on_destroy,
     after_update
   } = component.$$;
-  fragment && fragment.m(target, anchor); // onMount happens before the initial afterUpdate
+  fragment && fragment.m(target, anchor);
 
-  add_render_callback(() => {
-    const new_on_destroy = on_mount.map(run).filter(is_function);
+  if (!customElement) {
+    // onMount happens before the initial afterUpdate
+    add_render_callback(() => {
+      const new_on_destroy = on_mount.map(run).filter(is_function);
 
-    if (on_destroy) {
-      on_destroy.push(...new_on_destroy);
-    } else {
-      // Edge case - component was destroyed immediately,
-      // most likely as a result of a binding initialising
-      run_all(new_on_destroy);
-    }
+      if (on_destroy) {
+        on_destroy.push(...new_on_destroy);
+      } else {
+        // Edge case - component was destroyed immediately,
+        // most likely as a result of a binding initialising
+        run_all(new_on_destroy);
+      }
 
-    component.$$.on_mount = [];
-  });
+      component.$$.on_mount = [];
+    });
+  }
+
   after_update.forEach(add_render_callback);
 }
 
@@ -327,10 +350,9 @@ function make_dirty(component, i) {
   component.$$.dirty[i / 31 | 0] |= 1 << i % 31;
 }
 
-function init(component, options, instance, create_fragment, not_equal, props, dirty = [-1]) {
+function init(component, options, instance, create_fragment, not_equal, props, append_styles, dirty = [-1]) {
   const parent_component = current_component;
   set_current_component(component);
-  const prop_values = options.props || {};
   const $$ = component.$$ = {
     fragment: null,
     ctx: null,
@@ -342,16 +364,19 @@ function init(component, options, instance, create_fragment, not_equal, props, d
     // lifecycle
     on_mount: [],
     on_destroy: [],
+    on_disconnect: [],
     before_update: [],
     after_update: [],
-    context: new Map(parent_component ? parent_component.$$.context : []),
+    context: new Map(options.context || (parent_component ? parent_component.$$.context : [])),
     // everything else
     callbacks: blank_object(),
     dirty,
-    skip_bound: false
+    skip_bound: false,
+    root: options.target || parent_component.$$.root
   };
+  append_styles && append_styles($$.root);
   let ready = false;
-  $$.ctx = instance ? instance(component, prop_values, (i, ret, ...rest) => {
+  $$.ctx = instance ? instance(component, options.props || {}, (i, ret, ...rest) => {
     const value = rest.length ? rest[0] : ret;
 
     if ($$.ctx && not_equal($$.ctx[i], $$.ctx[i] = value)) {
@@ -379,7 +404,7 @@ function init(component, options, instance, create_fragment, not_equal, props, d
     }
 
     if (options.intro) transition_in(component.$$.fragment);
-    mount_component(component, options.target, options.anchor);
+    mount_component(component, options.target, options.anchor, options.customElement);
     flush();
   }
 
@@ -415,7 +440,7 @@ class SvelteComponent {
 
 }
 
-/* src/Menu.svelte generated by Svelte v3.31.2 */
+/* src/Menu.svelte generated by Svelte v3.46.4 */
 
 function get_each_context(ctx, list, i) {
 	const child_ctx = ctx.slice();
@@ -440,10 +465,10 @@ function create_if_block_1(ctx) {
 
 	return {
 		c() {
-			button0 = element("button");
+			button0 = element$1("button");
 			t0 = text(/*resetLabel*/ ctx[0]);
 			t1 = space();
-			button1 = element("button");
+			button1 = element$1("button");
 			t2 = text(t2_value);
 			t3 = space();
 			if (if_block) if_block.c();
@@ -527,7 +552,7 @@ function create_if_block_2(ctx) {
 
 	return {
 		c() {
-			a = element("a");
+			a = element$1("a");
 			t0 = text(/*currentLabel*/ ctx[1]);
 			t1 = space();
 			t2 = text(t2_value);
@@ -578,7 +603,7 @@ function create_else_block(ctx) {
 
 	return {
 		c() {
-			a = element("a");
+			a = element$1("a");
 			t = text(t_value);
 			set_attributes(a, a_data);
 		},
@@ -627,13 +652,14 @@ function create_if_block(ctx) {
 
 	return {
 		c() {
-			button = element("button");
+			button = element$1("button");
 			t = text(t_value);
 			set_attributes(button, button_data);
 		},
 		m(target, anchor) {
 			insert(target, button, anchor);
 			append(button, t);
+			if (button.autofocus) button.focus();
 
 			if (!mounted) {
 				dispose = listen(button, "click", click_handler);
@@ -673,7 +699,7 @@ function create_each_block(ctx) {
 
 	return {
 		c() {
-			li = element("li");
+			li = element$1("li");
 			if_block.c();
 			t = space();
 		},
@@ -716,10 +742,10 @@ function create_fragment(ctx) {
 
 	return {
 		c() {
-			div = element("div");
+			div = element$1("div");
 			if (if_block) if_block.c();
 			t = space();
-			ul = element("ul");
+			ul = element$1("ul");
 
 			for (let i = 0; i < each_blocks.length; i += 1) {
 				each_blocks[i].c();
@@ -808,24 +834,24 @@ function instance($$self, $$props, $$invalidate) {
 	const click_handler = index => go(index);
 
 	$$self.$$set = $$props => {
-		if ("resetLabel" in $$props) $$invalidate(0, resetLabel = $$props.resetLabel);
-		if ("currentLabel" in $$props) $$invalidate(1, currentLabel = $$props.currentLabel);
-		if ("items" in $$props) $$invalidate(7, items = $$props.items);
+		if ('resetLabel' in $$props) $$invalidate(0, resetLabel = $$props.resetLabel);
+		if ('currentLabel' in $$props) $$invalidate(1, currentLabel = $$props.currentLabel);
+		if ('items' in $$props) $$invalidate(7, items = $$props.items);
 	};
 
 	$$self.$$.update = () => {
 		if ($$self.$$.dirty & /*position, items*/ 384) {
-			 $$invalidate(2, current = position.length === 0
+			$$invalidate(2, current = position.length === 0
 			? null
 			: position.reduce((a, x) => a.items[x], { items }));
 		}
 
 		if ($$self.$$.dirty & /*current, items*/ 132) {
-			 $$invalidate(3, currentItems = current ? current.items : items);
+			$$invalidate(3, currentItems = current ? current.items : items);
 		}
 
 		if ($$self.$$.dirty & /*position*/ 256) {
-			 dispatch("level", position.length);
+			dispatch('level', position.length);
 		}
 	};
 
@@ -843,7 +869,7 @@ function instance($$self, $$props, $$invalidate) {
 	];
 }
 
-class Menu extends SvelteComponent {
+class Menu$1 extends SvelteComponent {
 	constructor(options) {
 		super();
 		init(this, options, instance, create_fragment, not_equal, { resetLabel: 0, currentLabel: 1, items: 7 });
@@ -887,7 +913,7 @@ const instanceOf = constructor => next => value => {
   }
 };
 
-const element$1 = instanceOf(HTMLElement);
+const element = instanceOf(HTMLElement);
 const elements = next => value => {
   const xs = (() => {
     if (Array.isArray(value)) {
@@ -899,12 +925,12 @@ const elements = next => value => {
     }
   })();
 
-  return next(xs.map(use([element$1])));
+  return next(xs.map(use([element])));
 };
-const requiredElement = use([required, element$1]);
+const requiredElement = use([required, element]);
 const optionalElements = use([optional, elements]);
 const optionalFunction = use([optional, typeOf('function')]);
-const optionalString = use([optional, typeOf('string')]);
+use([optional, typeOf('string')]);
 const defaultString = (value, label) => use([default_(label), typeOf('string')])(value);
 
 const isElementNode = node => node.nodeType === Node.ELEMENT_NODE;
@@ -968,7 +994,7 @@ const parseContainer = node => {
   }
 };
 
-class Menu$1 {
+class Menu {
   constructor(options) {
     this.target = requiredElement(options.target);
     this.trigger = optionalElements(options.trigger);
@@ -993,7 +1019,7 @@ class Menu$1 {
       this.menuContainer.prepend(newMenu);
     }
 
-    this.menu = new Menu({
+    this.menu = new Menu$1({
       target: options.target.querySelector('.tiroirjs__nav'),
       props: {
         items,
@@ -1143,6 +1169,6 @@ class Menu$1 {
 
 }
 
-_defineProperty(Menu$1, "activeClass", 'active');
+_defineProperty(Menu, "activeClass", 'active');
 
-export default Menu$1;
+export { Menu as default };
