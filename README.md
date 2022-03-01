@@ -118,7 +118,7 @@ You can use the API to generate content and open or close your menu with JS:
 
 Name                      | Parameter type(s)       | Description
 ------------------------- | ----------------------- | ----------
-setItems(items)           | JSON or JS Object       | Set a custom content (more info on the structure below)
+setItems(items)           | JSON or JS Array        | Set a custom content (more info on the structure below)
 open()                    |                         | Open your dropdown
 close()                   |                         | Close your dropdown
 toggle()                  |                         | Toggle your dropdown
