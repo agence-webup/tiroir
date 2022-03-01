@@ -52,7 +52,7 @@ $color-primary: currentColor;
   box-sizing: border-box;
 }
 
-.tiroirjs__menu--left {
+[data-tiroir-direction="left"] .tiroirjs__menu {
   right: initial;
   left: 0;
   transform: translateX(-103%);
