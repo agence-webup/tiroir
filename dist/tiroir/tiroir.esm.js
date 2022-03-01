@@ -1254,8 +1254,6 @@ class Menu {
       }
     });
     this.menu.$on('level', event => {
-      console.log('change level');
-
       this._resetTab();
     });
 
@@ -1285,7 +1283,7 @@ class Menu {
       this._touchEnd(e);
     }, false);
     document.addEventListener('keydown', e => {
-      if (e.key === "Escape" && this.isOpen()) {
+      if (e.key === 'Escape' && this.isOpen()) {
         this.close();
       }
     });
@@ -1366,7 +1364,6 @@ class Menu {
   _resetTab() {
     var _tabbable;
 
-    console.log(tabbable(this.menuContainer));
     (_tabbable = tabbable(this.menuContainer)) === null || _tabbable === void 0 ? void 0 : _tabbable[0].focus();
   }
 

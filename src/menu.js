@@ -40,7 +40,6 @@ export default class Menu {
       }
     })
     this.menu.$on('level', event => {
-      console.log('change level')
       this._resetTab()
     })
 
@@ -68,7 +67,7 @@ export default class Menu {
       this._touchEnd(e)
     }, false)
     document.addEventListener('keydown', e => {
-      if (e.key === "Escape" && this.isOpen()) {
+      if (e.key === 'Escape' && this.isOpen()) {
         this.close()
       }
     })
@@ -137,8 +136,7 @@ export default class Menu {
   }
 
   _resetTab () {
-    console.log(tabbable(this.menuContainer))
-    tabbable(this.menuContainer)?.[0].focus();
+    tabbable(this.menuContainer)?.[0].focus()
   }
 
   open () {
