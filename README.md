@@ -19,7 +19,7 @@ Then Tiroir have some css you will have to add (feel free to custom it for a bet
 <link rel="stylesheet" href="dist/tiroir/tiroir.css">
 ```
 
-Finally just link the dropmic's code at the end of your document:
+Finally just link the Tiroir's code at the end of your document:
 
 ```html
 <!-- Browser build -->
