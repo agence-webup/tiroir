@@ -4,6 +4,8 @@ A simple but complete drawer menu plugin in vanilla JavaScript
 
 *⚠️ (Still in early development state)*
 
+![Demo keyboard navigation](demo.webp)
+
 ## Documentation
 
 ### Installation
@@ -128,11 +130,11 @@ Example:
 tiroir.setItems(navContent);
 tiroir.open()
 ```
-  
+
  ### Navigation object structure
- 
+
  The navigation object given to the `setItems()` must respect this type of structure to be able to work:
- 
+
  ```javascript
 const menu = new Tiroir({
   target: document.querySelector('[data-tiroir="mobile-menu"]'),
@@ -150,7 +152,7 @@ const items = [
             {
                 label: 'Posts',
                 attributes: { // You can pass custom html attributes
-                    class: 'test' 
+                    class: 'test'
                 },
                 link: 'https://example.com/blog/',
                 items: [
@@ -223,7 +225,7 @@ onst menu = new Tiroir({
   }
 });
 ```
-  
+
 ## Modify Tiroir.js
 
  1. Setup dependencies: `npm i` (or `npm ci` if you don't want to impact package-lock)
