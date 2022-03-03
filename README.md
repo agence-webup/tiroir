@@ -34,113 +34,32 @@ Or as a JS module:
 import tiroir from 'Tiroir'
 ```
 
-### Use
+## Use
 
-#### Create the base layout for your button
-1. Create a div with a `tiroirjs` css class
-2. Add a `data-tiroir-direction="left"` attribute to the div if you want the menu to slide from the left side of screen (default behavior is from the right):
-3. You can also add a `data-tiroir` attribute to your div to target it.
-4. Fill the said div with:
-  1. An emty `<div clss="tiroirjs__overlay"></div>` element
-  2. A `<div clss="tiroirjs__menu"></div>` element and put whatever your want in it, it will be the menu content
-
-Example:
-```html
-<button data-tiroir-btn>Menu</button>
-<div class="tiroirjs" data-tiroir="mobile-menu">
-  <div class="tiroirjs__overlay"></div>
-  <div class="tiroirjs__menu">
-    super menu
-  </div>
-</div>
-```
-
-#### Instantiate your new menu
+### Instantiate your menu
 ```javascript
 var tiroir = new Tiroir({
-  target: document.querySelector('[data-tiroir="mobile-menu"]'),
-  trigger: document.querySelectorAll('[data-tiroir-btn]')
+  trigger: document.querySelectorAll('[data-tiroir-btn]') // If you alredy now which element clicks will open the menu
 })
 ```
 
-#### Add content
-You can create the content by yourself or use the API to build your navigation with a JSON (cf. below)
+### Add content
+You can create the content by yourself or use the API to build your navigation with a JSON/JS-Object (cf. below)
 
-Use this template (`<div class="tiroirjs__nav">` is needed with a similar structure, otherwise you can completely customize the content)
+#### Use a server side rendered content
 
-```html
-<div class="tiroirjs" data-tiroir="mobile-menu">
-  <div class="tiroirjs__overlay"></div>
-  <div class="tiroirjs__menu">
-    <div class="tiroirjs__nav">
-      <ul>
-        <li>
-          <a href="https://example.com" class="a">item 1</a>
-        </li>
-        <li>
-          item 2
-          <ul>
-            <li><a href="https://duckduckgo.com">item 2.1</a></li>
-            <li><a href="https://duckduckgo.com">item 2.2</a></li>
-          </ul>
-        </li>
-        <li>
-          <button type="button" class="button">item 3</button>
-          <ul>
-            <li><a href="https://duckduckgo.com">item 3.1</a></li>
-            <li><a href="https://duckduckgo.com">item 3.2</a></li>
-          </ul>
-        </li>
-        <li>
-          <a href="https://duckduckgo.com">item 4</a>
-          <ul>
-            <li><a href="https://duckduckgo.com">item 4.1</a></li>
-            <li><a href="https://duckduckgo.com">item 4.2</a></li>
-          </ul>
-        </li>
-      </ul>
-    </div>
+You can give an `HTML element` as `content` option to init object. The plugin will send it into the menu.
 
-    <div class="tiroirjs__custom">
-      Some custom content
-    </div>
+- If the content contain an element with a `data-tiroir-nav` attribute it gonna parse the contain and fill the stacking navigation with it.
+- If the content contain an element with a `data-tiroir-footer` attribute it gonna send it into the sticky footer element
 
-    <div class="tiroirjs__footer">
-      <a href="https://example.com">link 1</a>
-      <a href="https://example.com">link 2</a>
-      <a href="https://example.com">link 3</a>
-    </div>
-  </div>
-</div>
-```
+#### Add complex content with a JSON/JS-Object 
 
-## API
+If you have a complex navigation or don't want your link to be indexed by search engines, you can fill the stacking navigation with a JSON/JS-Object using the `setItems()` function.
 
-You can use the API to generate content and open or close your menu with JS:
-
-Name                      | Parameter type(s)       | Description
-------------------------- | ----------------------- | ----------
-setItems(items)           | JSON or JS Array        | Set a custom content (more info on the structure below)
-open()                    |                         | Open your dropdown
-close()                   |                         | Close your dropdown
-toggle()                  |                         | Toggle your dropdown
-
-Example:
-```javascript
-tiroir.setItems(navContent);
-tiroir.open()
-```
-
- ### Navigation object structure
-
- The navigation object given to the `setItems()` must respect this type of structure to be able to work:
+The object must respect this type of structure to be able to work:
 
  ```javascript
-const menu = new Tiroir({
-  target: document.querySelector('[data-tiroir="mobile-menu"]'),
-  trigger: document.querySelectorAll('[data-tiroir-btn]')
-})
-
 const items = [
     {
         label: 'Home',
@@ -195,25 +114,30 @@ const items = [
     },
 ]
 
+const menu = new Tiroir()
 menu.setItems(items)
 
 ```
 
-## Options
 
-  Name         | Type     | Description
--------------- | -------- | -----------------------------------------
-  onOpen       | function | Callback to execute when tiroir is opening
-  onClose      | function | Callback to execute when tiroir is closing
-  resetLabel   | string   | Custom back-home button's label in the navigation
-  currentLabel | string   | Custom current prefix's label in the navigation
+## Options 
+
+  Name             | Type              | Description
+------------------ | ----------------- | -----------------------------------------
+  trigger          | node list/element | Element(s) who will open the menu on click
+  content          | node element      | Default menu content on load
+  directionReverse | boolean           | Inverse the menu opening's direction (on the right by default)
+  onOpen           | function          | Callback to execute when tiroir is opening
+  onClose          | function          | Callback to execute when tiroir is closing
+  resetLabel       | string            | Custom back-home button's label in the navigation
+  currentLabel     | string            | Custom current prefix's label in the navigation
 
 
 
 Example:
 ```javascript
-onst menu = new Tiroir({
-  target: document.querySelector('[data-tiroir="mobile-menu"]'),
+const menu = new Tiroir({
+  content: document.querySelector('[data-tiroir="menu-content"]'),
   trigger: document.querySelectorAll('[data-tiroir-btn]'),
   resetLabel: 'Back at first',
   currentLabel: 'All the ',
@@ -224,6 +148,27 @@ onst menu = new Tiroir({
       console.log('menu closed')
   }
 });
+```
+
+## API
+
+You can use the API to generate content and open or close your menu with JS:
+
+Name                      | Parameter type(s)       | Description
+------------------------- | ----------------------- | ----------
+open()                    | *no parameter*          | Open your menu
+close()                   | *no parameter*          | Close your menu
+toggle()                  | *no parameter*          | Toggle your menu
+setItems(items)           | JSON or JS Array        | Set a custom navigation (more info on the structure below)
+parseItems(el)            | HTML element            | Parse a navigation container and fill the navigation with it
+setContent(el)            | HTML element            | Set a custom content
+setFooter(el)             | HTML element            | Set a custom content
+
+
+Example:
+```javascript
+tiroir.setItems(navContent);
+tiroir.open()
 ```
 
 ## Modify Tiroir.js
