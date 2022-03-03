@@ -1,49 +1,64 @@
 <script>
-  import { createEventDispatcher, tick } from 'svelte';
-  const dispatch = createEventDispatcher()
+  import { focus } from "focus-svelte";
+  import StackNavigation from './Navigation.svelte';
 
-	export let resetLabel
-	export let currentLabel
-	export let items = []
-	let position = []
-	$: current = position.length === 0 ? null : position.reduce((a, x) => a.items[x], {items})
-  $: currentItems = current ? current.items : items
-  $: if (position.length) {
-    (async () => {await tick();dispatch('level', position.length)})() // dispatch only after DOM is updated
+  let menu
+  let nav
+	let footer
+
+	export let active = false
+	export let directionReverse = false
+  export let navOptions
+	export let customContent
+
+  const open = () => {
+    active = true
+  }
+  const close = () => {
+    document.activeElement.blur()
+    active = false
+  }
+  const toggle = () => {
+    active = !active
+  }
+  const setItems = (items) => {
+    nav.$set({ items })
+  }
+  const setFooter = (node) => {
+    node.classList.add('tiroirjs__footer')
+    footer.replaceWith(node)
+  }
+  const setCustomContent = (node) => {
+    customContent.innerHTML = ''
+    customContent.appendChild(node)
   }
 
-	const back = () => {
-		position = position.slice(0, -1)
+  function handleWindowKeyDown (e) {
+		if (e.key === 'Escape' && active) {
+			close();
+		}
 	}
-	const go = index => {
-		position = [...position, index]
+
+  function updateFocus (navPosition) {
+    if (navPosition = 0) { firstFocusableEl(menu).focus() }
+    else {
+      firstFocusableEl(nav.$capture_state().navlist).focus()
+    }
   }
-  const reset = () => {
-    position = []
+
+  function firstFocusableEl (container) {
+    return container.querySelector('a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])')
   }
+
 </script>
 
-<svelte:options immutable={true}/>
+<svelte:window on:keydown={handleWindowKeyDown}/>
 
-<div>
-
-	{#if current}
-		<button class="tiroirjs__reset" type="button" on:click={reset}>{resetLabel}</button>
-    <button class="tiroirjs__back" type="button" on:click={back}>{current.label}</button>
-    {#if current.link}
-      <a class="tiroirjs__current" href={current.link} >{currentLabel} {current.label}</a>
-    {/if}
-	{/if}
-
-	<ul class="tiroirjs__navList">
-		{#each currentItems as item, index }
-			<li>
-				{#if item.items}
-					<button {...item?.attributes} class="tiroirjs__navItem {current?'tiroirjs__navItem--child':''} {item.attributes?.class??''}" type="button" on:click={() => go(index)} >{item.label}</button>
-				{:else}
-					<a {...item?.attributes} class="tiroirjs__navItem {current?'tiroirjs__navItem--child':''} {item.attributes?.class??''}" href={item.link}>{item.label}</a>
-				{/if}
-			</li>
-		{/each}
-	</ul>
+<div class="tiroirjs {active?'active':''}">
+  <div class="tiroirjs__overlay {active?'active':''}" on:click={close}></div>
+  <div class="tiroirjs__menu {active?'active':''} {directionReverse?'tiroirjs__menu--reverse':''}" use:focus="{{enabled: active, assignAriaHidden: true}}" bind:this={menu}>
+    <StackNavigation on:level={updateFocus} bind:this={nav} {...navOptions} />
+    <div class="tiroirjs__custom" bind:this={customContent}></div>
+    <div class="tiroirjs__footer" bind:this={footer}></div>
+  </div>
 </div>

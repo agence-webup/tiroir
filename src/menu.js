@@ -1,176 +1,85 @@
 import MenuConstructor from './Menu.svelte'
 import * as validation from './validation'
 import parser from './parser'
-import { tabbable } from 'tabbable'
 
 export default class Menu {
   static activeClass = 'active'
 
   constructor (options) {
-    this.target = validation.requiredElement(options.target)
+    this.content = validation.optionalElement(options.content)
     this.trigger = validation.optionalElements(options.trigger)
     this.onOpen = validation.optionalFunction(options.onOpen)
     this.onClose = validation.optionalFunction(options.onClose)
     this.resetLabel = validation.defaultString(options.resetLabel, 'Back home')
     this.currentLabel = validation.defaultString(options.currentLabel, 'All')
-    this.overlay = options.target.querySelector('.tiroirjs__overlay')
-    this.menuContainer = options.target.querySelector('.tiroirjs__menu')
-    this.direction = this.menuContainer.classList.contains('tiroirjs__menu--left')
-
-    this.startDistance = 0
-    this.distance = 0
-
-    const ssrItems = this.target.querySelector('.tiroirjs__nav')
-    let items = []
-    const newMenu = document.createElement('div')
-    newMenu.classList.add('tiroirjs__nav')
-    if (ssrItems) {
-      items = parser(ssrItems)
-      ssrItems.parentNode.replaceChild(newMenu, ssrItems)
-    } else {
-      this.menuContainer.prepend(newMenu)
-    }
-
-    this.menu = new MenuConstructor({
-      target: options.target.querySelector('.tiroirjs__nav'),
-      props: {
-        items,
-        resetLabel: this.resetLabel,
-        currentLabel: this.currentLabel
-      }
-    })
-    this.menu.$on('level', event => {
-      this._resetTab()
-    })
+    this.directionReverse = options.directionReverse ?? false
 
     if (this.trigger) {
       this.trigger.forEach((btn) => {
         btn.addEventListener('click', () => {
-          this.toggle()
+          this.open()
         })
       })
     }
-    if (this.overlay) {
-      this.overlay.addEventListener('click', (event) => {
-        event.preventDefault()
-        event.stopPropagation()
-        this.close()
-      }, false)
-    }
-    document.addEventListener('touchstart', (e) => {
-      this._touchStart(e)
-    }, false)
-    document.addEventListener('touchmove', (e) => {
-      this._touchMove(e)
-    }, false)
-    document.addEventListener('touchend', (e) => {
-      this._touchEnd(e)
-    }, false)
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && this.isOpen()) {
-        this.close()
+
+    this.menu = new MenuConstructor({
+      target: document.body,
+      props: {
+        directionReverse: this.directionReverse,
+        navOptions: {
+          resetLabel: this.resetLabel,
+          currentLabel: this.currentLabel
+        }
       }
     })
-  }
 
-  _normalizeElement (element) {
-    if (element instanceof HTMLElement) {
-      return element
-    } else {
-      throw new Error(element.constructor.name + ' is not an html element')
+    // If SSR navigation: parse it and send it to the menu
+    const ssrItems = this.content?.querySelector('[data-tiroir-nav]')
+    if (ssrItems) {
+      this.parseItems(ssrItems)
+      ssrItems.remove()
     }
-  }
-
-  _normalizeSelector (x) {
-    const elements = (() => {
-      switch (true) {
-        case Array.isArray(x): return x
-        case x instanceof NodeList || x instanceof HTMLCollection: return Array.from(x)
-        default: return [x]
-      }
-    })()
-    for (const element of elements) {
-      this._normalizeElement(element)
+    // If SSR footer: send it to the menu
+    const ssrFooter = this.content?.querySelector('[data-tiroir-footer]')
+    if (ssrFooter) {
+      ssrFooter.removeAttribute('data-tiroir-footer')
+      this.setFooter(ssrFooter)
     }
-    return elements
-  }
-
-  _normalizeFunction (f) {
-    if (typeof f === 'function') {
-      return f
-    } else {
-      throw new Error(f.constructor.name + ' is not an valid function')
+    // If SSR content: send it to the menu
+    if (this.content) {
+      this.setContent(this.content)
     }
-  }
-
-  _transitionEnd () {
-    if (!this.isOpen()) {
-      this.close()
-    }
-  }
-
-  _touchStart (event) {
-    if (!this.isOpen()) {
-      return
-    }
-    this.startDistance = event.touches[0].pageX
-  }
-
-  _touchMove (event) {
-    if (!this.isOpen()) {
-      return
-    }
-    this.distance = (this.direction ? Math.min : Math.max)(0, event.touches[0].pageX - this.startDistance)
-    this.menuContainer.style.transform = 'translateX(' + this.distance + 'px)'
-  }
-
-  _touchEnd () {
-    if (!this.isOpen()) {
-      return
-    }
-    if (Math.abs(this.distance) > 70) {
-      this.close()
-    } else {
-      this.menuContainer.style.transform = null
-    }
-  }
-
-  _resetTab () {
-    tabbable(this.menuContainer)?.[0].focus()
   }
 
   open () {
-    this.overlay.classList.add(this.constructor.activeClass)
-    this.menuContainer.classList.add(this.constructor.activeClass)
-    if (this.onOpen) {
-      this.onOpen()
-    }
-    this._resetTab()
+    this.menu.$capture_state().open()
   }
 
   close () {
-    document.activeElement.blur()
-    this.menuContainer.style.transform = null
-    this.overlay.classList.remove(this.constructor.activeClass)
-    this.menuContainer.classList.remove(this.constructor.activeClass)
-    if (this.onClose) {
-      this.onClose()
-    }
+    this.menu.$capture_state().close()
   }
 
   isOpen () {
-    return this.menuContainer.classList.contains(this.constructor.activeClass)
+    return !!this.menu.$capture_state().active
   }
 
   toggle () {
-    if (!this.isOpen()) {
-      this.open()
-    } else {
-      this.close()
-    }
+    this.menu.$capture_state().toggle()
   }
 
   setItems (items) {
-    this.menu.$set({ items })
+    this.menu.$capture_state().setItems(items)
+  }
+
+  parseItems (items) {
+    this.setItems(parser(validation.requiredElement(items)))
+  }
+
+  setContent (el) {
+    this.menu.$capture_state().setCustomContent(validation.requiredElement(el))
+  }
+
+  setFooter (el) {
+    this.menu.$capture_state().setFooter(validation.requiredElement(el))
   }
 }

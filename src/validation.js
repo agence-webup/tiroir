@@ -55,6 +55,7 @@ export const elements = next => value => {
 }
 
 export const requiredElement = use([required, element])
+export const optionalElement = use([optional, element])
 export const optionalElements = use([optional, elements])
 export const optionalFunction = use([optional, typeOf('function')])
 export const optionalString = use([optional, typeOf('string')])

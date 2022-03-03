@@ -2,88 +2,86 @@
 <html lang="en">
 
 <head>
-    <meta charset='utf-8'>
-    <meta name='viewport' content='width=device-width,initial-scale=1'>
-    <title>Tiroir.js Demo</title>
-    <link rel="stylesheet" href="/tiroir/tiroir.css"/>
-    <script src='/tiroir/tiroir.min.js'></script>
-    <style>
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      }
-      button, input, select, textarea {
-        font: inherit;
-      }
+  <meta charset='utf-8'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <title>Tiroir.js Demo</title>
+  <link rel="stylesheet" href="/tiroir/tiroir.css"/>
+  <script src='/tiroir/tiroir.min.js'></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+    button, input, select, textarea {
+      font: inherit;
+    }
 
-      a, a:visited {
-        text-decoration: none;
-      }
+    a, a:visited {
+      text-decoration: none;
+    }
 
-      a:hover, a:active, a:focus {
-        text-decoration: underline;
-      }
+    a:hover, a:active, a:focus {
+      text-decoration: underline;
+    }
 
-    </style>
+  </style>
 </head>
 
 <body>
-    <h1>Tiroir.js</h1>
-    <button data-tiroir-btn>Menu</button>
-<div class="tiroirjs" id="tiroir">
-<div class="tiroirjs__overlay"></div>
-<nav class="tiroirjs__menu">
-  <div class="tiroirjs__nav">
-    <ul>
-      <li>
-        <a href="https://tixie.name" class="a">item 1</a>
-      </li>
-      <li>
-        item 2
+  <h1>Tiroir.js</h1>
+  <button data-tiroir-btn>Menu</button>
+  <div style="display: none">
+    <div id="tiroir">
+      <div data-tiroir-nav>
         <ul>
-          <li><a href="https://google.com">item 2.1</a></li>
-          <li><a href="https://google.com">item 2.2</a></li>
+          <li>
+            <a href="https://tixie.name" class="a">item 1</a>
+          </li>
+          <li>
+            item 2
+            <ul>
+              <li><a href="https://google.com">item 2.1</a></li>
+              <li><a href="https://google.com">item 2.2</a></li>
+            </ul>
+          </li>
+          <li>
+            <button type="button" class="button">item 3</button>
+            <ul>
+              <li><a href="https://google.com">item 3.1</a></li>
+              <li><a href="https://google.com">item 3.2</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="https://google.com">item 4</a>
+            <ul>
+              <li><a href="https://google.com">item 4.1</a></li>
+              <li><a href="https://google.com">item 4.2</a></li>
+            </ul>
+          </li>
         </ul>
-      </li>
-      <li>
-        <button type="button" class="button">item 3</button>
-        <ul>
-          <li><a href="https://google.com">item 3.1</a></li>
-          <li><a href="https://google.com">item 3.2</a></li>
-        </ul>
-      </li>
-      <li>
-        <a href="https://google.com">item 4</a>
-        <ul>
-          <li><a href="https://google.com">item 4.1</a></li>
-          <li><a href="https://google.com">item 4.2</a></li>
-        </ul>
-      </li>
-    </ul>
-  </div>
+      </div>
 
-  <div class="tiroirjs__custom">
-    Some <strong>custom</strong> <i>content</i>
-  </div>
+        Some <strong>custom</strong> <i>content</i>
 
-  <div class="tiroirjs__footer">
-              <a href="#">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"><path fill="#03A9F4" d="M15 0c8.25 0 15 6.75 15 15s-6.75 15-15 15S0 23.25 0 15 6.75 0 15 0zm9 8.25c-.75.45-2.025.9-2.85 1.05-.675-.75-1.65-1.05-2.7-1.05C16.425 8.25 15 9.975 15 12v1.5c-3 0-5.925-2.25-7.725-4.5-.3.525-.525 1.2-.525 1.875 0 1.35 1.275 2.775 2.25 3.375-.6 0-1.725-.45-2.25-.75v.075c0 1.8 1.275 3 2.925 3.3-.3.075-.675.375-2.1.375.45 1.425 2.85 2.25 4.425 2.25-1.275.975-3.525 1.5-5.25 1.5H6c1.65 1.05 3.9 1.5 6 1.5 6.825 0 10.5-5.175 10.5-10.05v-.825c.75-.525.975-1.05 1.5-1.8-.675.3-1.5.6-2.25.675.75-.45 1.95-1.425 2.25-2.25z"/></svg>
-              </a>
-              <a href="#">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"><defs><linearGradient x1="-580.923%" y1="-579.361%" x2="175.364%" y2="175.054%" id="a"><stop stop-color="#FFD521" offset="0%"/><stop stop-color="#FFD521" offset="5%"/><stop stop-color="#F50000" offset="50.112%"/><stop stop-color="#B900B4" offset="95%"/><stop stop-color="#B900B4" offset="95.008%"/><stop stop-color="#B900B4" offset="100%"/></linearGradient><linearGradient x1=".902%" y1=".909%" x2="91.746%" y2="91.753%" id="b"><stop stop-color="#FFD521" offset="0%"/><stop stop-color="#FFD521" offset="5%"/><stop stop-color="#F50000" offset="50.112%"/><stop stop-color="#B900B4" offset="95%"/><stop stop-color="#B900B4" offset="95.008%"/><stop stop-color="#B900B4" offset="100%"/></linearGradient><linearGradient x1="-45.531%" y1="-45.602%" x2="131.225%" y2="131.281%" id="c"><stop stop-color="#FFD521" offset="0%"/><stop stop-color="#FFD521" offset="5%"/><stop stop-color="#F50000" offset="50.112%"/><stop stop-color="#B900B4" offset="95%"/><stop stop-color="#B900B4" offset="95.008%"/><stop stop-color="#B900B4" offset="100%"/></linearGradient></defs><g fill-rule="nonzero" fill="none"><path d="M24.808 6.99a1.802 1.802 0 1 1-3.604 0 1.801 1.801 0 0 1 3.604 0" fill="url(#a)" transform="matrix(1 0 0 -1 0 13.983)"/><path d="M27.208 8.94c-.067-1.463-.311-2.258-.514-2.786-.273-.7-.598-1.2-1.126-1.725a4.583 4.583 0 0 0-1.722-1.119c-.528-.206-1.326-.451-2.788-.521-1.582-.07-2.05-.085-6.06-.085-4.006 0-4.478.015-6.06.085-1.462.07-2.256.315-2.784.521-.703.27-1.2.594-1.725 1.12a4.572 4.572 0 0 0-1.123 1.724c-.203.528-.451 1.323-.514 2.785C2.715 10.521 2.7 10.997 2.7 15c0 4.009.014 4.481.09 6.062.064 1.463.312 2.257.515 2.79.27.698.595 1.196 1.123 1.72a4.64 4.64 0 0 0 1.725 1.123c.528.207 1.322.448 2.785.518 1.58.07 2.053.087 6.06.087 4.009 0 4.477-.017 6.059-.087 1.462-.07 2.26-.311 2.788-.518.7-.273 1.2-.598 1.722-1.123a4.626 4.626 0 0 0 1.126-1.72c.203-.533.447-1.327.514-2.79.074-1.58.091-2.053.091-6.063 0-4.001-.017-4.477-.09-6.059Zm2.7 12.244c-.073 1.599-.325 2.69-.699 3.642a7.31 7.31 0 0 1-1.728 2.659 7.375 7.375 0 0 1-2.655 1.728c-.955.371-2.043.626-3.642.696-1.6.077-2.11.091-6.186.091-4.072 0-4.586-.014-6.185-.091-1.596-.07-2.683-.325-3.642-.696a7.394 7.394 0 0 1-2.652-1.728 7.37 7.37 0 0 1-1.732-2.66c-.37-.95-.622-2.042-.7-3.64-.07-1.6-.087-2.111-.087-6.187 0-4.072.018-4.583.087-6.182.078-1.595.33-2.686.7-3.642A7.357 7.357 0 0 1 2.52 2.52 7.393 7.393 0 0 1 5.171.787C6.13.417 7.217.165 8.813.091 10.412.018 10.926 0 14.998 0c4.076 0 4.587.018 6.186.091 1.599.074 2.687.326 3.642.696.986.385 1.823.9 2.655 1.732a7.298 7.298 0 0 1 1.728 2.655c.374.956.626 2.047.7 3.642.073 1.6.091 2.11.091 6.182 0 4.076-.018 4.587-.091 6.186Z" fill="url(#b)" transform="matrix(1 0 0 -1 0 30)"/><path d="M14.998 9.999c-2.76 0-5 2.236-5 4.995a5.001 5.001 0 1 0 10.003 0A5 5 0 0 0 14.998 10Zm0 12.703c-4.254 0-7.7-3.453-7.7-7.708a7.7 7.7 0 0 1 7.7-7.7 7.703 7.703 0 1 1 0 15.408Z" fill="url(#c)" transform="matrix(1 0 0 -1 0 29.996)"/></g></svg>
-              </a>
-              <a href="#">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"><g fill-rule="nonzero" fill="none"><path d="M30 15c0-8.284-6.716-15-15-15C6.716 0 0 6.716 0 15c0 7.487 5.485 13.692 12.656 14.818V19.336H8.848V15h3.808v-3.305c0-3.76 2.24-5.836 5.666-5.836 1.641 0 3.358.293 3.358.293v3.692h-1.892c-1.863 0-2.444 1.156-2.444 2.342V15h4.16l-.665 4.336h-3.495v10.482C24.514 28.692 30 22.487 30 15" fill="#1877F2"/><path d="M20.839 19.336 21.504 15h-4.16v-2.814c0-1.186.58-2.342 2.444-2.342h1.892V6.152s-1.717-.293-3.358-.293c-3.426 0-5.666 2.077-5.666 5.836V15H8.848v4.336h3.808v10.482a15.138 15.138 0 0 0 4.688 0V19.336h3.495" fill="#FFF"/></g></svg>
-              </a>
-            </div>
-        </nav>
+      <div data-tiroir-footer>
+        <a href="#">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"><path fill="#03A9F4" d="M15 0c8.25 0 15 6.75 15 15s-6.75 15-15 15S0 23.25 0 15 6.75 0 15 0zm9 8.25c-.75.45-2.025.9-2.85 1.05-.675-.75-1.65-1.05-2.7-1.05C16.425 8.25 15 9.975 15 12v1.5c-3 0-5.925-2.25-7.725-4.5-.3.525-.525 1.2-.525 1.875 0 1.35 1.275 2.775 2.25 3.375-.6 0-1.725-.45-2.25-.75v.075c0 1.8 1.275 3 2.925 3.3-.3.075-.675.375-2.1.375.45 1.425 2.85 2.25 4.425 2.25-1.275.975-3.525 1.5-5.25 1.5H6c1.65 1.05 3.9 1.5 6 1.5 6.825 0 10.5-5.175 10.5-10.05v-.825c.75-.525.975-1.05 1.5-1.8-.675.3-1.5.6-2.25.675.75-.45 1.95-1.425 2.25-2.25z"/></svg>
+        </a>
+        <a href="#">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"><defs><linearGradient x1="-580.923%" y1="-579.361%" x2="175.364%" y2="175.054%" id="a"><stop stop-color="#FFD521" offset="0%"/><stop stop-color="#FFD521" offset="5%"/><stop stop-color="#F50000" offset="50.112%"/><stop stop-color="#B900B4" offset="95%"/><stop stop-color="#B900B4" offset="95.008%"/><stop stop-color="#B900B4" offset="100%"/></linearGradient><linearGradient x1=".902%" y1=".909%" x2="91.746%" y2="91.753%" id="b"><stop stop-color="#FFD521" offset="0%"/><stop stop-color="#FFD521" offset="5%"/><stop stop-color="#F50000" offset="50.112%"/><stop stop-color="#B900B4" offset="95%"/><stop stop-color="#B900B4" offset="95.008%"/><stop stop-color="#B900B4" offset="100%"/></linearGradient><linearGradient x1="-45.531%" y1="-45.602%" x2="131.225%" y2="131.281%" id="c"><stop stop-color="#FFD521" offset="0%"/><stop stop-color="#FFD521" offset="5%"/><stop stop-color="#F50000" offset="50.112%"/><stop stop-color="#B900B4" offset="95%"/><stop stop-color="#B900B4" offset="95.008%"/><stop stop-color="#B900B4" offset="100%"/></linearGradient></defs><g fill-rule="nonzero" fill="none"><path d="M24.808 6.99a1.802 1.802 0 1 1-3.604 0 1.801 1.801 0 0 1 3.604 0" fill="url(#a)" transform="matrix(1 0 0 -1 0 13.983)"/><path d="M27.208 8.94c-.067-1.463-.311-2.258-.514-2.786-.273-.7-.598-1.2-1.126-1.725a4.583 4.583 0 0 0-1.722-1.119c-.528-.206-1.326-.451-2.788-.521-1.582-.07-2.05-.085-6.06-.085-4.006 0-4.478.015-6.06.085-1.462.07-2.256.315-2.784.521-.703.27-1.2.594-1.725 1.12a4.572 4.572 0 0 0-1.123 1.724c-.203.528-.451 1.323-.514 2.785C2.715 10.521 2.7 10.997 2.7 15c0 4.009.014 4.481.09 6.062.064 1.463.312 2.257.515 2.79.27.698.595 1.196 1.123 1.72a4.64 4.64 0 0 0 1.725 1.123c.528.207 1.322.448 2.785.518 1.58.07 2.053.087 6.06.087 4.009 0 4.477-.017 6.059-.087 1.462-.07 2.26-.311 2.788-.518.7-.273 1.2-.598 1.722-1.123a4.626 4.626 0 0 0 1.126-1.72c.203-.533.447-1.327.514-2.79.074-1.58.091-2.053.091-6.063 0-4.001-.017-4.477-.09-6.059Zm2.7 12.244c-.073 1.599-.325 2.69-.699 3.642a7.31 7.31 0 0 1-1.728 2.659 7.375 7.375 0 0 1-2.655 1.728c-.955.371-2.043.626-3.642.696-1.6.077-2.11.091-6.186.091-4.072 0-4.586-.014-6.185-.091-1.596-.07-2.683-.325-3.642-.696a7.394 7.394 0 0 1-2.652-1.728 7.37 7.37 0 0 1-1.732-2.66c-.37-.95-.622-2.042-.7-3.64-.07-1.6-.087-2.111-.087-6.187 0-4.072.018-4.583.087-6.182.078-1.595.33-2.686.7-3.642A7.357 7.357 0 0 1 2.52 2.52 7.393 7.393 0 0 1 5.171.787C6.13.417 7.217.165 8.813.091 10.412.018 10.926 0 14.998 0c4.076 0 4.587.018 6.186.091 1.599.074 2.687.326 3.642.696.986.385 1.823.9 2.655 1.732a7.298 7.298 0 0 1 1.728 2.655c.374.956.626 2.047.7 3.642.073 1.6.091 2.11.091 6.182 0 4.076-.018 4.587-.091 6.186Z" fill="url(#b)" transform="matrix(1 0 0 -1 0 30)"/><path d="M14.998 9.999c-2.76 0-5 2.236-5 4.995a5.001 5.001 0 1 0 10.003 0A5 5 0 0 0 14.998 10Zm0 12.703c-4.254 0-7.7-3.453-7.7-7.708a7.7 7.7 0 0 1 7.7-7.7 7.703 7.703 0 1 1 0 15.408Z" fill="url(#c)" transform="matrix(1 0 0 -1 0 29.996)"/></g></svg>
+        </a>
+        <a href="#">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"><g fill-rule="nonzero" fill="none"><path d="M30 15c0-8.284-6.716-15-15-15C6.716 0 0 6.716 0 15c0 7.487 5.485 13.692 12.656 14.818V19.336H8.848V15h3.808v-3.305c0-3.76 2.24-5.836 5.666-5.836 1.641 0 3.358.293 3.358.293v3.692h-1.892c-1.863 0-2.444 1.156-2.444 2.342V15h4.16l-.665 4.336h-3.495v10.482C24.514 28.692 30 22.487 30 15" fill="#1877F2"/><path d="M20.839 19.336 21.504 15h-4.16v-2.814c0-1.186.58-2.342 2.444-2.342h1.892V6.152s-1.717-.293-3.358-.293c-3.426 0-5.666 2.077-5.666 5.836V15H8.848v4.336h3.808v10.482a15.138 15.138 0 0 0 4.688 0V19.336h3.495" fill="#FFF"/></g></svg>
+        </a>
+      </div>
     </div>
+  </div>
 
-    <script>
+  <script>
 const menu = new Tiroir({
-    target: document.querySelector('#tiroir'),
+    content: document.querySelector('#tiroir'),
     trigger: document.querySelectorAll('[data-tiroir-btn]'),
     resetLabel: 'Back to main menu',
+    directionReverse: true,
     onOpen: function () {
         console.log('menu open')
     },
@@ -147,7 +145,7 @@ const items = [
 ]
 
 menu.setItems(items)
-    </script>
+  </script>
 </body>
 
 </html>
