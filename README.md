@@ -53,7 +53,7 @@ You can give an `HTML element` as `content` option to init object. The plugin wi
 - If the content contain an element with a `data-tiroir-nav` attribute it gonna parse the contain and fill the stacking navigation with it.
 - If the content contain an element with a `data-tiroir-footer` attribute it gonna send it into the sticky footer element
 
-#### Add complex content with a JSON/JS-Object 
+#### Add complex content with a JSON/JS-Object
 
 If you have a complex navigation or don't want your link to be indexed by search engines, you can fill the stacking navigation with a JSON/JS-Object using the `setItems()` function.
 
@@ -120,7 +120,7 @@ menu.setItems(items)
 ```
 
 
-## Options 
+## Options
 
   Name             | Type              | Description
 ------------------ | ----------------- | -----------------------------------------
@@ -158,7 +158,6 @@ Name                      | Parameter type(s)       | Description
 ------------------------- | ----------------------- | ----------
 open()                    | *no parameter*          | Open your menu
 close()                   | *no parameter*          | Close your menu
-toggle()                  | *no parameter*          | Toggle your menu
 setItems(items)           | JSON or JS Array        | Set a custom navigation (more info on the structure below)
 parseItems(el)            | HTML element            | Parse a navigation container and fill the navigation with it
 setContent(el)            | HTML element            | Set a custom content
