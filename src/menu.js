@@ -53,7 +53,6 @@ export default class Menu {
 
   open () {
     this.menu.$set({ active: true })
-    console.log(this.menu)
   }
 
   close () {
@@ -73,7 +72,6 @@ export default class Menu {
   }
 
   setFooter (el) {
-    console.log(el)
     this.menu.$set({ footerContent: el })
   }
 }

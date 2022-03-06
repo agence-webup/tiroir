@@ -2127,7 +2127,6 @@
       this.menu.$set({
         active: true
       });
-      console.log(this.menu);
     }
 
     close() {
@@ -2153,7 +2152,6 @@
     }
 
     setFooter(el) {
-      console.log(el);
       this.menu.$set({
         footerContent: el
       });
