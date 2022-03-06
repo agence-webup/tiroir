@@ -52,23 +52,16 @@ export default class Menu {
   }
 
   open () {
-    this.menu.$capture_state().open()
+    this.menu.$set({ active: true })
+    console.log(this.menu)
   }
 
   close () {
-    this.menu.$capture_state().close()
-  }
-
-  isOpen () {
-    return !!this.menu.$capture_state().active
-  }
-
-  toggle () {
-    this.menu.$capture_state().toggle()
+    this.menu.$set({ active: false })
   }
 
   setItems (items) {
-    this.menu.$capture_state().setItems(items)
+    this.menu.$set({ navigationItems: items })
   }
 
   parseItems (items) {
@@ -76,10 +69,11 @@ export default class Menu {
   }
 
   setContent (el) {
-    this.menu.$capture_state().setCustomContent(validation.requiredElement(el))
+    this.menu.$set({ customContent: el })
   }
 
   setFooter (el) {
-    this.menu.$capture_state().setFooter(validation.requiredElement(el))
+    console.log(el)
+    this.menu.$set({ footerContent: el })
   }
 }
