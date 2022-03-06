@@ -5,7 +5,7 @@
 	export let resetLabel
 	export let currentLabel
 	export let items = []
-	let navlist
+	let navList
 	let position = []
 	$: current = position.length === 0 ? null : position.reduce((a, x) => a.items[x], {items})
   $: currentItems = current ? current.items : items
@@ -23,7 +23,7 @@
     position = []
   }
 
-  export const focusFirstEl = () => {
+  export function focusFirstEl () {
     navList.querySelector('a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])').focus()
   }
 
@@ -40,7 +40,7 @@
     {/if}
 	{/if}
 
-	<ul class="tiroirjs__navList" bind:this={navlist}>
+	<ul class="tiroirjs__navList" bind:this={navList}>
 		{#each currentItems as item, index }
 			<li>
 				{#if item.items}

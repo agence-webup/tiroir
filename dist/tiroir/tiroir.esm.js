@@ -1596,7 +1596,7 @@ function instance$1($$self, $$props, $$invalidate) {
 	let { resetLabel } = $$props;
 	let { currentLabel } = $$props;
 	let { items = [] } = $$props;
-	let navlist;
+	let navList;
 	let position = [];
 
 	const back = () => {
@@ -1611,16 +1611,16 @@ function instance$1($$self, $$props, $$invalidate) {
 		$$invalidate(10, position = []);
 	};
 
-	const focusFirstEl = () => {
+	function focusFirstEl() {
 		navList.querySelector('a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])').focus();
-	};
+	}
 
 	const click_handler = index => go(index);
 
 	function ul_binding($$value) {
 		binding_callbacks[$$value ? 'unshift' : 'push'](() => {
-			navlist = $$value;
-			$$invalidate(3, navlist);
+			navList = $$value;
+			$$invalidate(3, navList);
 		});
 	}
 
@@ -1655,7 +1655,7 @@ function instance$1($$self, $$props, $$invalidate) {
 		resetLabel,
 		currentLabel,
 		current,
-		navlist,
+		navList,
 		currentItems,
 		back,
 		go,
